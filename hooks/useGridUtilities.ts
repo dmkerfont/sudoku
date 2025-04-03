@@ -2,8 +2,8 @@
 export interface GridUtilities {
     getRowCells: <T>(grid: T[][], row: number) => T[];
     getColumnCells: <T>(grid: T[][], column: number) => T[];
-    getBlockCells: <T>(grid: T[][], blockNumber: number) => T[];
-    getBlockNumber: (rowNumber: number, columnNumber: number) => number;
+    getBoxCells: <T>(grid: T[][], blockNumber: number) => T[];
+    getBoxNumber: (rowNumber: number, columnNumber: number) => number;
     updateGridCell: <T>(grid: T[][], row: number, column: number, state: T) => T[][];
 }
 
@@ -22,7 +22,7 @@ export const useGridUtilities = (): GridUtilities => {
         return cells;
     }    
 
-    const getBlockCells = <T>(grid: T[][], blockNumber: number): T[] => {
+    const getBoxCells = <T>(grid: T[][], blockNumber: number): T[] => {
         let columnStart: number = 0;
         let rowStart: number = 0;
 
@@ -56,7 +56,7 @@ export const useGridUtilities = (): GridUtilities => {
         return cells;
     }
 
-    const getBlockNumber = (rowNumber: number, columnNumber: number): number => {
+    const getBoxNumber = (rowNumber: number, columnNumber: number): number => {
         const blockNumber = Math.floor(rowNumber / 3) * 3 + Math.floor(columnNumber / 3);
         return blockNumber;
     }
@@ -68,8 +68,8 @@ export const useGridUtilities = (): GridUtilities => {
     }
 
     return {
-        getBlockCells,
-        getBlockNumber,
+        getBoxCells,
+        getBoxNumber,
         getColumnCells,
         getRowCells,
         updateGridCell

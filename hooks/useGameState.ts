@@ -46,9 +46,9 @@ export const useGameState = (): GameState => {
                 const val = Math.floor(Math.random() * 10);
                 const cellState: CellState = {
                     value: val,
-                    columnNumber: c,
-                    rowNumber: r,
-                    boxNumber: GridUtilities.getBoxNumber(r, c),
+                    column: c,
+                    row: r,
+                    box: GridUtilities.getBoxNumber(r, c),
                     showError: false,
                     pencilMarks: [],
                 }
@@ -98,7 +98,7 @@ export const useGameState = (): GameState => {
     };
 
     const updateCell = (state: CellState) => {
-        setGameBoard((prevGrid) => GridUtilities.updateGridCell(prevGrid, state.rowNumber, state.columnNumber, state));
+        setGameBoard((prevGrid) => GridUtilities.updateGridCell(prevGrid, state.row, state.column, state));
     }
 
     const onCellPress = (cell: CellState): void => {
@@ -112,10 +112,10 @@ export const useGameState = (): GameState => {
                 value: 0
             }
             updateCell(update);
-            return;        
+            return;
         }
         else if(pencilMarksEnabled && selectedNumber) {
-            let pencilMarks = gameBoard[cell.rowNumber][cell.columnNumber].pencilMarks;
+            let pencilMarks = gameBoard[cell.row][cell.column].pencilMarks;
 
             if(pencilMarks.includes(selectedNumber)){
                 pencilMarks = pencilMarks.filter(num => num !== selectedNumber);
@@ -124,7 +124,7 @@ export const useGameState = (): GameState => {
             }
 
             const update: CellState = {
-                ...gameBoard[cell.rowNumber][cell.columnNumber],
+                ...gameBoard[cell.row][cell.column],
                 pencilMarks 
             };
             updateCell(update);
@@ -133,7 +133,7 @@ export const useGameState = (): GameState => {
             // deselect if the cell matches
             if(cell.value === selectedNumber){
                 const update: CellState = {
-                    ...gameBoard[cell.rowNumber][cell.columnNumber],
+                    ...gameBoard[cell.row][cell.column],
                     showError: false,
                     value: 0
                 };
@@ -142,7 +142,7 @@ export const useGameState = (): GameState => {
             }
             
             // check row for errors
-            const rowCells = GridUtilities.getRowCells(gameBoard, cell.rowNumber);
+            const rowCells = GridUtilities.getRowCells(gameBoard, cell.row);
             const rowMatch = rowCells.find((c) => c.value === selectedNumber);
             rowMatch && updateCell({
                 ...rowMatch,
@@ -150,14 +150,15 @@ export const useGameState = (): GameState => {
             });
 
             // check column for errors
-            const columnCells = GridUtilities.getColumnCells(gameBoard, cell.columnNumber);
+            const columnCells = GridUtilities.getColumnCells(gameBoard, cell.column);
             const columnMatch = columnCells.find((c) => c.value === selectedNumber);
             columnMatch && updateCell({
                 ...columnMatch,
                 showError: true
             });
 
-            const boxCells = GridUtilities.getBoxCells(gameBoard, cell.boxNumber);
+            // check box for errors
+            const boxCells = GridUtilities.getBoxCells(gameBoard, cell.box);
             const boxMatch = boxCells.find((c) => c.value === selectedNumber);
             boxMatch && updateCell({
                 ...boxMatch,
@@ -166,40 +167,31 @@ export const useGameState = (): GameState => {
 
             // no errors
             if(!rowMatch && !columnMatch && !boxMatch){                        
-                const currentValue = gameBoard[cell.rowNumber][cell.columnNumber].value;
+                const currentValue = gameBoard[cell.row][cell.column].value;
                 const update: CellState = {
-                    ...gameBoard[cell.rowNumber][cell.columnNumber],
+                    ...gameBoard[cell.row][cell.column],
                     value: (currentValue === selectedNumber) ? 0 : selectedNumber,
                     pencilMarks: []
                 };
                 updateCell(update);
-                setGameBoard((board => updateAffectedPencilMarks(update, board)));
+                setGameBoard((board => removeAffectedPencilMarks(update, board)));
             }
         }
     }
-
-    const updateAffectedPencilMarks = (affectedByCell: CellState, grid: CellState[][]): CellState[][] => {
-        const boxCells = GridUtilities.getBoxCells(gameBoard, affectedByCell.boxNumber);
-        const columnCells = GridUtilities.getColumnCells(gameBoard, affectedByCell.columnNumber);
-        const rowCells = GridUtilities.getRowCells(gameBoard, affectedByCell.rowNumber);
+    
+    const removeAffectedPencilMarks = (affectedByCell: CellState, grid: CellState[][]): CellState[][] => {
+        const boxCells = GridUtilities.getBoxCells(grid, affectedByCell.box);
+        const columnCells = GridUtilities.getColumnCells(grid, affectedByCell.column);
+        const rowCells = GridUtilities.getRowCells(grid, affectedByCell.row);
 
         let affectedCells = [...boxCells, ...columnCells, ...rowCells];
-        // we can filter out the affectedByCell as its included 3 time here - slight inefficiency
-        affectedCells = affectedCells.filter(c => c.rowNumber !== affectedByCell.rowNumber || c.columnNumber !== affectedByCell.columnNumber);
-        
-        const newGrid = grid.map(row => {
-            const newRow = row.map(cell => ({...cell}));
-            return newRow;
+        // we can filter out the affectedByCell as its included 3 time here - slight efficiency
+        affectedCells = affectedCells.filter(c => c.row !== affectedByCell.row || c.column !== affectedByCell.column);
+
+        return GridUtilities.updateManyCells(grid, affectedCells, (c) => {
+            c.pencilMarks = c.pencilMarks.filter(pm => pm !== affectedByCell.value)
+            return c;
         });
-
-        for(let cell of affectedCells){     
-            // remove affected pencil marks if they exist
-            const pencilMarks = newGrid[cell.rowNumber][cell.columnNumber].pencilMarks;
-            const newPencilMarks = pencilMarks.filter(pm => pm !== affectedByCell.value);
-            newGrid[cell.rowNumber][cell.columnNumber].pencilMarks = newPencilMarks;
-        }
-
-        return newGrid;
     }
 
     const resetGame = (): void => {

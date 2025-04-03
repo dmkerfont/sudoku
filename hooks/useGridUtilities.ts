@@ -1,3 +1,4 @@
+import { Cell } from "@/types/Cell";
 
 export interface GridUtilities {
     getRowCells: <T>(grid: T[][], row: number) => T[];
@@ -5,6 +6,7 @@ export interface GridUtilities {
     getBoxCells: <T>(grid: T[][], blockNumber: number) => T[];
     getBoxNumber: (rowNumber: number, columnNumber: number) => number;
     updateGridCell: <T>(grid: T[][], row: number, column: number, state: T) => T[][];
+    updateManyCells: <T extends Cell>(grid: T[][], cells: T[], predicate: (start: T) => T ) => T[][];
 }
 
 export const useGridUtilities = (): GridUtilities => {
@@ -67,12 +69,27 @@ export const useGridUtilities = (): GridUtilities => {
         return newGrid;
     }
 
+    const updateManyCells = <T extends Cell>(grid: T[][], cells: T[], update: (cell: T) => T): T[][] => {
+        const newGrid = grid.map(row => {
+            const newRow = row.map(cell => ({...cell}));
+            return newRow;
+        });
+
+        for(let cell of cells){     
+            newGrid[cell.row][cell.column] = update(cell);
+        }
+
+        return newGrid;
+    }
+
     return {
         getBoxCells,
         getBoxNumber,
         getColumnCells,
         getRowCells,
-        updateGridCell
+        updateGridCell,
+
+        updateManyCells
     }
 }
 

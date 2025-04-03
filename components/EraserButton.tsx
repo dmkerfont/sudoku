@@ -9,7 +9,7 @@ export interface EraserButtonProps {
 export const EraserButton: React.FC<EraserButtonProps> = ({onEraserToggle, isSelected}) => {
     return (
         <TouchableOpacity onPress={onEraserToggle} style={[styles.button, isSelected ? styles.selected : undefined]}>
-            <Icon source={'eraser'} size={24}/>
+            <Icon source={'eraser'} size={36} color={'#FF69B4'}/>
         </TouchableOpacity>
     );
 };
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     button: {
         borderRadius: 4,
         borderWidth: 1,
-        backgroundColor: 'F5F5F5',
+        backgroundColor: '#F5F5F5',
         borderColor: 'gray',
         alignItems: 'center',
         justifyContent: 'center',

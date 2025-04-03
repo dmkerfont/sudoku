@@ -3,7 +3,6 @@ import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle } from "
 
 export interface NumberSelectorProps {
     onNumberSelect: (num: number) => void;
-    onEraserSelect: VoidFunction;
     onPencilMarksToggle: VoidFunction;
     selectedNumber: number | null;
     style?: StyleProp<ViewStyle>;

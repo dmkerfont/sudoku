@@ -9,7 +9,7 @@ export interface PencilMarkButtonProps {
 export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({onPencilMarkToggle, isSelected}) => {
     return (
         <TouchableOpacity onPress={onPencilMarkToggle} style={[styles.button, isSelected ? styles.selected : undefined]}>
-            <Icon source={'pencil'} size={24}/>
+            <Icon source={'pencil-outline'} size={36} color={'#F2C464'}/>
         </TouchableOpacity>
     );
 };

@@ -47,7 +47,6 @@ export default function Index() {
         </View>
 
         <NumberSelector 
-          onEraserSelect={gameState.selectEraser}
           onNumberSelect={gameState.selectNumber}
           onPencilMarksToggle={gameState.togglePencilMarks}
           selectedNumber={gameState.selectedNumber}
@@ -55,7 +54,7 @@ export default function Index() {
         /> 
 
         <View style={[styles.column, styles.marginLeft16]}>
-          <EraserButton onEraserToggle={gameState.selectEraser} isSelected={gameState.isEraserEnabled}/>
+          <EraserButton onEraserToggle={gameState.toggleEraser} isSelected={gameState.isEraserEnabled}/>
           <PencilMarkButton onPencilMarkToggle={gameState.togglePencilMarks} isSelected={gameState.pencilMarksEnabled}/>
         </View>
       </View>      

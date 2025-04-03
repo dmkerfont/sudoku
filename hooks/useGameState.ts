@@ -8,7 +8,7 @@ export interface GameState {
     onCellPress: (cell: CellState) => void;
     resetGame: VoidFunction;
     selectNumber: (num: number) => void;
-    selectEraser: VoidFunction;
+    toggleEraser: VoidFunction;
     togglePencilMarks: VoidFunction;
     validateBoard: VoidFunction;
     getBlockCells: (blockNumber: number) => CellState[];
@@ -204,9 +204,8 @@ export const useGameState = (): GameState => {
         setEraserEnabled(false);
     };
 
-    const selectEraser = () => {
-        setSelectedNumber(null);
-        setEraserEnabled(true);
+    const toggleEraser = () => {
+        setEraserEnabled(isEnabled => !isEnabled);
     }
 
     const shouldHighlight = (cell: CellState): boolean => {
@@ -220,7 +219,7 @@ export const useGameState = (): GameState => {
         onCellPress,
         resetGame,
         selectNumber,
-        selectEraser,
+        toggleEraser,
         togglePencilMarks: () => setPencilMarksEnabled(enabled => !enabled),
         validateBoard,
         getBlockCells: (blockNumber: number) => GridUtilities.getBoxCells(gameBoard, blockNumber),

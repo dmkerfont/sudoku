@@ -10,7 +10,7 @@ export interface SudokuBoxProps {
 export const SudokuBox = (props: SudokuBoxProps) => {
     const { boxNumber, gameState } = props;
 
-    const cells = gameState.getBlockCells(boxNumber).map((cell, index) => {        
+    const cells = gameState.getBoxCells(boxNumber).map((cell, index) => {        
         return (
             <SudokuCell 
                 onPress={gameState.onCellPress} 

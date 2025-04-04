@@ -3,7 +3,7 @@ import { Cell } from "@/types/Cell";
 export interface GridUtilities {
     getRowCells: <T>(grid: T[][], row: number) => T[];
     getColumnCells: <T>(grid: T[][], column: number) => T[];
-    getBoxCells: <T>(grid: T[][], blockNumber: number) => T[];
+    getBoxCells: <T>(grid: T[][], box: number) => T[];
     getBoxNumber: (rowNumber: number, columnNumber: number) => number;
     updateGridCell: <T>(grid: T[][], row: number, column: number, state: T) => T[][];
     updateManyCells: <T extends Cell>(grid: T[][], cells: T[], predicate: (start: T) => T ) => T[][];
@@ -24,27 +24,27 @@ export const useGridUtilities = (): GridUtilities => {
         return cells;
     }    
 
-    const getBoxCells = <T>(grid: T[][], blockNumber: number): T[] => {
+    const getBoxCells = <T>(grid: T[][], boxNumber: number): T[] => {
         let columnStart: number = 0;
         let rowStart: number = 0;
 
-        if ([0,1,2].includes(blockNumber)) {
+        if ([0,1,2].includes(boxNumber)) {
             rowStart = 0;
         }
-        if ([3,4,5].includes(blockNumber)) {
+        if ([3,4,5].includes(boxNumber)) {
             rowStart = 3;
         }
-        if ([6,7,8].includes(blockNumber)) {
+        if ([6,7,8].includes(boxNumber)) {
             rowStart = 6;
         }
 
-        if ([0,3,6].includes(blockNumber)) {
+        if ([0,3,6].includes(boxNumber)) {
             columnStart = 0;
         }
-        if ([1,4,7].includes(blockNumber)) {
+        if ([1,4,7].includes(boxNumber)) {
             columnStart = 3;
         }
-        if ([2,5,8].includes(blockNumber)) {
+        if ([2,5,8].includes(boxNumber)) {
             columnStart = 6;
         }
 
@@ -59,8 +59,8 @@ export const useGridUtilities = (): GridUtilities => {
     }
 
     const getBoxNumber = (rowNumber: number, columnNumber: number): number => {
-        const blockNumber = Math.floor(rowNumber / 3) * 3 + Math.floor(columnNumber / 3);
-        return blockNumber;
+        const boxNumber = Math.floor(rowNumber / 3) * 3 + Math.floor(columnNumber / 3);
+        return boxNumber;
     }
 
     const updateGridCell = <T>(grid: T[][], row: number, column: number, state: T): T[][] => {

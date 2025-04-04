@@ -2,6 +2,7 @@ import { CellState } from "@/types/CellState";
 import { useEffect, useState } from "react";
 import { Alert, Platform } from 'react-native';
 import { useGridUtilities } from "./useGridUtilities";
+import { useGenerateBoard } from "./useGenerateBoard";
 
 export interface GameState {
     initializeGame: VoidFunction;
@@ -11,7 +12,7 @@ export interface GameState {
     toggleEraser: VoidFunction;
     togglePencilMarks: VoidFunction;
     validateBoard: VoidFunction;
-    getBlockCells: (blockNumber: number) => CellState[];
+    getBoxCells: (boxNumber: number) => CellState[];
     shouldHighlight: (cell: CellState) => boolean;
     isEraserEnabled: boolean;
     isLoading: boolean;
@@ -27,12 +28,21 @@ export const useGameState = (): GameState => {
     const [pencilMarksEnabled, setPencilMarksEnabled] = useState(false);
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
 
-    const GridUtilities = useGridUtilities();    
+    const GridUtilities = useGridUtilities();
+    const { generate } = useGenerateBoard();
 
     useEffect(() => {
         initializeGame();
         setIsLoading(false);
     }, []);
+
+    const initGame2 = () => {
+        const grid = generate('Easy');
+        
+        setInitialBoard(grid);
+        const gridCopy = grid.map(row => [...row]);
+        setGameBoard(gridCopy);
+    }
 
     const initializeGame = () => {
         const grid: CellState[][] = [];
@@ -222,7 +232,7 @@ export const useGameState = (): GameState => {
         toggleEraser,
         togglePencilMarks: () => setPencilMarksEnabled(enabled => !enabled),
         validateBoard,
-        getBlockCells: (blockNumber: number) => GridUtilities.getBoxCells(gameBoard, blockNumber),
+        getBoxCells: (boxNumber: number) => GridUtilities.getBoxCells(gameBoard, boxNumber),
         shouldHighlight,
         isEraserEnabled,
         isLoading,

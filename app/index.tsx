@@ -2,11 +2,11 @@ import { EraserButton } from "@/components/EraserButton";
 import { NumberSelector } from "@/components/NumberSelector";
 import { PencilMarkButton } from "@/components/PencilMarkButton";
 import { SudokuBox } from "@/components/SudokuBox";
+import { WinnerModal } from "@/components/WinnerModal";
 import { useGameState } from "@/hooks/useGameState";
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
-
   const gameState = useGameState();
   
   if(gameState.isLoading){
@@ -48,7 +48,6 @@ export default function Index() {
 
         <NumberSelector 
           onNumberSelect={gameState.selectNumber}
-          onPencilMarksToggle={gameState.togglePencilMarks}
           selectedNumber={gameState.selectedNumber}
           style={styles.marginLeft16}
         /> 
@@ -57,10 +56,13 @@ export default function Index() {
           <EraserButton onEraserToggle={gameState.toggleEraser} isSelected={gameState.isEraserEnabled}/>
           <PencilMarkButton onPencilMarkToggle={gameState.togglePencilMarks} isSelected={gameState.pencilMarksEnabled}/>
         </View>
-      </View>      
-    </View>
+      </View>
+
+      <WinnerModal show={gameState.showWinner} onNewGamePress={gameState.initializeGame}/>
+
+    </View>    
   );
-}
+};
 
 const styles = StyleSheet.create({
   pageContainer: {

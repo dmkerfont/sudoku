@@ -1,9 +1,8 @@
 import { useMemo } from "react";
-import { StyleSheet, TouchableOpacity, Text, View, StyleProp, ViewStyle } from "react-native";
+import { StyleSheet, Text, View, StyleProp, ViewStyle, Pressable } from "react-native";
 
 export interface NumberSelectorProps {
     onNumberSelect: (num: number) => void;
-    onPencilMarksToggle: VoidFunction;
     selectedNumber: number | null;
     style?: StyleProp<ViewStyle>;
 };
@@ -13,13 +12,13 @@ export const NumberSelector = (props: NumberSelectorProps) => {
         const buttons = [];
         for(let i = 1; i <= 9; i++){
             buttons.push(
-                <TouchableOpacity 
+                <Pressable 
                     onPress={() => props.onNumberSelect(i)} 
                     style={[styles.numberButton, props.selectedNumber === i ? styles.selected : undefined]} 
                     key={i}
                 >
-                    <Text style={styles.numberText}>{i}</Text>
-                </TouchableOpacity>
+                    <Text selectable={false} style={styles.numberText}>{i}</Text>
+                </Pressable>
             );
         }
         return buttons;

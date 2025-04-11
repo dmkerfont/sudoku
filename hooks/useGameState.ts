@@ -2,7 +2,8 @@ import { CellState } from "@/types/CellState";
 import { useEffect, useState } from "react";
 import { Alert, Platform } from 'react-native';
 import { useGridUtilities } from "./useGridUtilities";
-import { useGenerateBoard } from "./useGenerateBoard";
+import { Difficulty, useGenerateBoard } from "./useGenerateBoard";
+import { Cell } from "@/types/Cell";
 
 export interface GameState {
     initializeGame: VoidFunction;
@@ -14,6 +15,7 @@ export interface GameState {
     validateBoard: VoidFunction;
     getBoxCells: (boxNumber: number) => CellState[];
     shouldHighlight: (cell: CellState) => boolean;
+    showWinner: boolean;
     isEraserEnabled: boolean;
     isLoading: boolean;
     pencilMarksEnabled: boolean;
@@ -21,54 +23,39 @@ export interface GameState {
 };
 
 export const useGameState = (): GameState => {
-    const [initialBoard, setInitialBoard] = useState<CellState[][]>([]);
+    const [solvedGrid, setSolvedGrid] = useState<Cell[][]>([]);
+    const [initialGameBoard, setInitialGameBoard] = useState<CellState[][]>([]);
     const [gameBoard, setGameBoard] = useState<CellState[][]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isEraserEnabled, setEraserEnabled] = useState(false);
     const [pencilMarksEnabled, setPencilMarksEnabled] = useState(false);
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
+    const [showWinner, setShowWinner] = useState(false);
 
     const GridUtilities = useGridUtilities();
-    const { generate } = useGenerateBoard();
+    const { generateGameBoard } = useGenerateBoard();
 
     useEffect(() => {
         initializeGame();
         setIsLoading(false);
     }, []);
 
-    const initGame2 = () => {
-        const grid = generate('Easy');
-        
-        setInitialBoard(grid);
-        const gridCopy = grid.map(row => [...row]);
-        setGameBoard(gridCopy);
-    }
+    useEffect(() => {
+        if(!isLoading && isPuzzleComplete()){
+            setShowWinner(true);
+        }
+    }, [gameBoard]);
+
 
     const initializeGame = () => {
-        const grid: CellState[][] = [];
-        // generate 81 values
-        for (let r = 0; r < 9; r++){
-            // init new row
-            grid[r] = [];
+        setShowWinner(false);
 
-            for (let c = 0; c < 9; c++){
-                // random number 0-9 for now
-                const val = Math.floor(Math.random() * 10);
-                const cellState: CellState = {
-                    value: val,
-                    column: c,
-                    row: r,
-                    box: GridUtilities.getBoxNumber(r, c),
-                    showError: false,
-                    pencilMarks: [],
-                }
-                grid[r][c] = cellState;     
-            }
-        }
-
-        setInitialBoard(grid);
-        const gridCopy = grid.map(row => [...row]);
-        setGameBoard(gridCopy);
+        const gameBoard = generateGameBoard(Difficulty.Easy);
+        // Source of truth
+        setSolvedGrid(gameBoard.solvedGrid);
+        setInitialGameBoard(gameBoard.gameGrid);
+        const clonedGameGrid = GridUtilities.cloneGrid(gameBoard.gameGrid);
+        setGameBoard(clonedGameGrid);    
     };
 
     const validateBoard = () => {
@@ -140,14 +127,8 @@ export const useGameState = (): GameState => {
             updateCell(update);
         }
         else if(selectedNumber){
-            // deselect if the cell matches
+            // do nothing if number is already set
             if(cell.value === selectedNumber){
-                const update: CellState = {
-                    ...gameBoard[cell.row][cell.column],
-                    showError: false,
-                    value: 0
-                };
-                updateCell(update);
                 return;
             }
             
@@ -184,7 +165,7 @@ export const useGameState = (): GameState => {
                     pencilMarks: []
                 };
                 updateCell(update);
-                setGameBoard((board => removeAffectedPencilMarks(update, board)));
+                setGameBoard((board => removeAffectedPencilMarks(update, board)));                
             }
         }
     }
@@ -205,7 +186,7 @@ export const useGameState = (): GameState => {
     }
 
     const resetGame = (): void => {
-        const gridCopy = initialBoard.map(row => [...row]);
+        const gridCopy = initialGameBoard.map(row => [...row]);
         setGameBoard(gridCopy);
     }
 
@@ -223,6 +204,17 @@ export const useGameState = (): GameState => {
             || cell.pencilMarks.includes(selectedNumber ?? 0);
     }
     
+    const isPuzzleComplete = (): boolean => {
+        for(let r = 0; r < 9; r++){
+            for(let c = 0; c < 9; c++){
+                if(gameBoard[r][c].value !== solvedGrid[r][c].value){
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
     return ({
         initializeGame,
@@ -234,6 +226,7 @@ export const useGameState = (): GameState => {
         validateBoard,
         getBoxCells: (boxNumber: number) => GridUtilities.getBoxCells(gameBoard, boxNumber),
         shouldHighlight,
+        showWinner,
         isEraserEnabled,
         isLoading,
         pencilMarksEnabled,

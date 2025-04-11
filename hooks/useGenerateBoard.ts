@@ -1,28 +1,26 @@
 import { CellState } from "@/types/CellState";
 import { useGridUtilities } from "./useGridUtilities";
-import { useRef } from "react";
 import { Cell } from "@/types/Cell";
 
-export type Difficulty = 'Easy' | 'Medium' | 'Hard' | 'Expert';
+export enum Difficulty {
+  Easy = 'Easy',
+  Medium = 'Medium',
+  Hard = 'Hard',
+  Extreme = 'Extreme'
+}
+
+export interface GameBoard {
+  difficulty: Difficulty;
+  gameGrid: CellState[][];
+  solvedGrid: Cell[][];  
+}
 
 export interface UseGenerateBoardObj {
-  generate: (difficulty: Difficulty) => CellState[][];
+  generateGameBoard: (difficulty: Difficulty) => GameBoard;
 };
 
 export const useGenerateBoard = (): UseGenerateBoardObj => {  
   const GridUtilities = useGridUtilities();
-
-  const isGridFull = (grid: CellState[][]): boolean => {
-    for(let r = 0; r < 9; r++){
-      for(let c = 0; c < 9; c++){
-        if(grid[r][c].value === 0){
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
 
   const initEmptyGrid = (): CellState[][] => {
     const grid: CellState[][] = [];
@@ -42,182 +40,153 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
 
     return grid;
   }
-  
-  const solutionsCountRef = useRef<number>(0);
 
+  const isValueAllowed = (value: number, r: number, c: number, grid: Cell[][]): boolean => {
+    const GridUtilities = useGridUtilities();
+    const boxNumber = GridUtilities.getBoxNumber(r, c);
+    
+    const boxCells = GridUtilities.getBoxCells(grid, boxNumber);
+    const rowCells = GridUtilities.getRowCells(grid, r);
+    const columnCells = GridUtilities.getColumnCells(grid, c);
+  
+    const existsAlready = [...boxCells, ...rowCells, ...columnCells].find(c => c.value === value) !== undefined;
+    return !existsAlready;
+  }
+  
   /** Recursively tries all combinations of numbers to solve a grid.
       Returns true if the grid is solved. Trying all numbers 1-9 unsuccessfully
       will revert cell back to 0.
+
+      TODO: add randomness so we get a new board every time!
    */
   const solveGrid = (grid: CellState[][]): boolean => {
-    for(let cell = 0; cell < 81; cell++){
-      let r = Math.floor(cell/9);
-      let c = cell % 9;
-
-      if(grid[r][c].value == 0){
-        // Try 1-9
-        for(let num = 1; num < 10; num++){
-          const boxNumber = GridUtilities.getBoxNumber(r, c);
-          
-          const boxCells = GridUtilities.getBoxCells(grid, boxNumber);
-          const rowCells = GridUtilities.getRowCells(grid, r);
-          const columnCells = GridUtilities.getColumnCells(grid, c);
-
-          const existsAlready = [...boxCells, ...rowCells, ...columnCells].find(c => c.value === num) !== undefined;
-          if(!existsAlready){
-            // Valid choice... so far, try it out
-            grid[r][c].value == num;
-            
-            if(isGridFull(grid)){
-              solutionsCountRef.current++;
-              break;
-            }
-            else {
-              // Recursively continue solving the grid.
-              if(solveGrid(grid)){                
+    for(let r = 0; r < 9; r++){
+      for(let c = 0; c < 9; c++){
+        if(!grid[r][c].value){
+          for(let value = 1; value <= 9; value++){
+            if(isValueAllowed(value, r, c, grid)){
+              grid[r][c].value = value;
+              if(solveGrid(grid)){
                 return true;
               }
+              // backtrack
+              grid[r][c].value = 0;
             }
           }
-          break;
+          // 1-9 didn't work
+          return false;
         }
       }
-      
-      grid[r][c].value = 0;
     }
-    return false;
+    return true;    
   }
 
+  const hasUniqueSolution = (grid: Cell[][]): boolean => {
+    let solutionCount = 0;
+  
+    const solveAndCount = (grid: Cell[][]): boolean => {
+        // Find the first empty cell
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (!grid[row][col].value) {
+                    // Try every possible number (1-9)
+                    for (let value = 1; value <= 9; value++) {
+                        if (isValueAllowed(value, row, col, grid)) {
+                            grid[row][col].value = value;
+                            // Recurse and check for the next empty cell
+                            if (solveAndCount(grid)) {
+                                // If more than one solution found, stop
+                                if (solutionCount > 1) {
+                                    return false;
+                                }
+                                solutionCount++;
+                            }
+                            grid[row][col].value = 0; // Undo choice
+                        }
+                    }
+                    return false; // No valid value found, backtrack
+                }
+            }
+        }
+        
+        // If no empty cells, solution found
+        return true;
+    };
+  
+    // Clone grid to avoid modifying the original
+    const clonedGrid = GridUtilities.cloneGrid(grid);  
+    solveAndCount(clonedGrid);
+  
+    return solutionCount === 1;
+  };
+
+  const createGameGrid = (grid: Cell[][], difficulty: Difficulty): CellState[][] => {
+    // min/max number of clues to be left on the board
+    const difficultyMap: Record<Difficulty, { min: number, max: number}> = {
+        Easy: { min: 36, max: 40 },
+        Medium: { min: 30, max: 35 },
+        Hard: { min: 24, max: 29 },
+        Extreme: { min: 17, max: 24 }
+    };
+
+    const clonedGrid = GridUtilities.cloneGrid(grid);
+    const gameGrid: CellState[][] = clonedGrid.map(row => row.map(cell => {
+      const cellState: CellState = {
+        ...cell,
+        pencilMarks: [],
+        showError: false,        
+      };
+
+      return cellState
+    }));
+  
+    const { min, max } = difficultyMap[difficulty];
+    const numberCellsToRemove = 81 - Math.floor(Math.random() * (max - min + 1) + min);
+    console.log(`removing ${numberCellsToRemove} cells for ${difficulty} puzzle`);
+    let removedCount = 0;
+  
+    while (removedCount < numberCellsToRemove) {
+        const randomRow = Math.floor(Math.random() * 9);
+        const randomCol = Math.floor(Math.random() * 9);
+  
+        if (gameGrid[randomRow][randomCol].value != 0) {
+            // store it in case we must put it back
+            const backup = gameGrid[randomRow][randomCol].value;
+            gameGrid[randomRow][randomCol].value = 0;
+  
+            // Check if the puzzle still has a unique solution after removal
+            if (hasUniqueSolution(gameGrid)) {
+                console.log('has unique solution, value removed successfully');
+                removedCount++;
+            } else {
+                console.log('does not have unique solution, restoring value');
+                gameGrid[randomRow][randomCol].value = backup;  // Restore the value
+            }
+        }
+    }
+  
+    return gameGrid;
+  }
+
+  const generateGameBoard = (difficulty: Difficulty): GameBoard => {
+    const grid = initEmptyGrid();
+
+    solveGrid(grid);
+    console.log('solved grid:');
+    GridUtilities.printGrid(grid, (cell => cell.value.toString()));
+
+    const gameGrid = createGameGrid(grid,  Difficulty.Easy);
+    console.log('generated puzzle');
+    GridUtilities.printGrid(gameGrid, (cell => cell.value.toString()));
+
+    return {
+      difficulty,
+      gameGrid,
+      solvedGrid: grid,
+    };
+  }
 
   return {
-    generate: (): CellState[][] => {
-      const grid = initEmptyGrid();
-
-      solutionsCountRef.current = 0;
-
-      solveGrid(grid);
-
-      return grid;
-    }
+    generateGameBoard
   }
 };
-
-/*
-#A backtracking/recursive function to check all possible combinations of numbers until a solution is found
-def solveGrid(grid):
-  global counter
-  #Find next empty cell
-  for i in range(0,81):
-    row=i//9
-    col=i%9
-    if grid[row][col]==0:
-      for value in range (1,10):
-        # check not in row, column, or box
-        grid[row][col]=value
-        if checkGrid(grid):
-          counter+=1
-          break
-        else:
-          if solveGrid(grid):
-            return True
-      break
-  grid[row][col]=0  
-
-numberList=[1,2,3,4,5,6,7,8,9]
-#shuffle(numberList)
-
-#A backtracking/recursive function to check all possible combinations of numbers until a solution is found
-def fillGrid(grid):
-  global counter
-  #Find next empty cell
-  for i in range(0,81):
-    row=i//9
-    col=i%9
-    if grid[row][col]==0:
-      shuffle(numberList)      
-      for value in numberList:
-        #Check that this value has not already be used on this row
-        if not(value in grid[row]):
-          #Check that this value has not already be used on this column
-          if not value in (grid[0][col],grid[1][col],grid[2][col],grid[3][col],grid[4][col],grid[5][col],grid[6][col],grid[7][col],grid[8][col]):
-            #Identify which of the 9 squares we are working on
-            square=[]
-            if row<3:
-              if col<3:
-                square=[grid[i][0:3] for i in range(0,3)]
-              elif col<6:
-                square=[grid[i][3:6] for i in range(0,3)]
-              else:  
-                square=[grid[i][6:9] for i in range(0,3)]
-            elif row<6:
-              if col<3:
-                square=[grid[i][0:3] for i in range(3,6)]
-              elif col<6:
-                square=[grid[i][3:6] for i in range(3,6)]
-              else:  
-                square=[grid[i][6:9] for i in range(3,6)]
-            else:
-              if col<3:
-                square=[grid[i][0:3] for i in range(6,9)]
-              elif col<6:
-                square=[grid[i][3:6] for i in range(6,9)]
-              else:  
-                square=[grid[i][6:9] for i in range(6,9)]
-            #Check that this value has not already be used on this 3x3 square
-            if not value in (square[0] + square[1] + square[2]):
-              grid[row][col]=value
-              if checkGrid(grid):
-                return True
-              else:
-                if fillGrid(grid):
-                  return True
-      break
-  grid[row][col]=0             
-    
-#Generate a Fully Solved Grid
-fillGrid(grid)
-drawGrid(grid) 
-myPen.getscreen().update()
-sleep(1)
-
-
-#Start Removing Numbers one by one
-
-#A higher number of attempts will end up removing more numbers from the grid
-#Potentially resulting in more difficiult grids to solve!
-attempts = 5 
-counter=1
-while attempts>0:
-  #Select a random cell that is not already empty
-  row = randint(0,8)
-  col = randint(0,8)
-  while grid[row][col]==0:
-    row = randint(0,8)
-    col = randint(0,8)
-  #Remember its cell value in case we need to put it back  
-  backup = grid[row][col]
-  grid[row][col]=0
-  
-  #Take a full copy of the grid
-  copyGrid = []
-  for r in range(0,9):
-     copyGrid.append([])
-     for c in range(0,9):
-        copyGrid[r].append(grid[r][c])
-  
-  #Count the number of solutions that this grid has (using a backtracking approach implemented in the solveGrid() function)
-  counter=0      
-  solveGrid(copyGrid)   
-  #If the number of solution is different from 1 then we need to cancel the change by putting the value we took away back in the grid
-  if counter!=1:
-    grid[row][col]=backup
-    #We could stop here, but we can also have another attempt with a different cell just to try to remove more numbers
-    attempts -= 1
-  
-  myPen.clear()
-  drawGrid(grid) 
-  myPen.getscreen().update()
-
-print("Sudoku Grid Ready")
-
-*/

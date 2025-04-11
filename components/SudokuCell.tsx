@@ -24,7 +24,7 @@ export const SudokuCell = (props: SudokuCellProps) => {
     if(value){
         return (
             <Pressable onPress={onPress} style={style}>
-                <Text selectable={true} style={styles.valueText}>{value}</Text>
+                <Text selectable={false} style={styles.valueText}>{value}</Text>
             </Pressable>
         );
     }

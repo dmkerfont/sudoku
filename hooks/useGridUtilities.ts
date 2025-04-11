@@ -6,7 +6,9 @@ export interface GridUtilities {
     getBoxCells: <T>(grid: T[][], box: number) => T[];
     getBoxNumber: (rowNumber: number, columnNumber: number) => number;
     updateGridCell: <T>(grid: T[][], row: number, column: number, state: T) => T[][];
-    updateManyCells: <T extends Cell>(grid: T[][], cells: T[], predicate: (start: T) => T ) => T[][];
+    updateManyCells: <T extends Cell>(grid: T[][], cells: T[], updateCell: (cell: T) => T ) => T[][];
+    cloneGrid: <T extends Cell>(grid: T[][]) => T[][];
+    printGrid: <T extends Cell>(grid: T[][], printCell: (cell: T) => string) => void;
 }
 
 export const useGridUtilities = (): GridUtilities => {
@@ -69,17 +71,31 @@ export const useGridUtilities = (): GridUtilities => {
         return newGrid;
     }
 
-    const updateManyCells = <T extends Cell>(grid: T[][], cells: T[], update: (cell: T) => T): T[][] => {
+    const updateManyCells = <T extends Cell>(grid: T[][], cells: T[], updateCell: (cell: T) => T): T[][] => {
         const newGrid = grid.map(row => {
             const newRow = row.map(cell => ({...cell}));
             return newRow;
         });
 
         for(let cell of cells){     
-            newGrid[cell.row][cell.column] = update(cell);
+            newGrid[cell.row][cell.column] = updateCell(cell);
         }
 
         return newGrid;
+    }
+
+    const cloneGrid = <T extends Cell>(grid: T[][]): T[][] => {
+        return grid.map(row => row.map(cell => JSON.parse(JSON.stringify(cell)) as T));
+    }
+
+    const printGrid = <T extends Cell>(grid: T[][], printCell: (cell: T) => string): void => {
+        for(let r = 0; r < 9; r++){
+            let rowText: string = '';
+            for(let c = 0; c < 9; c++){
+                rowText += `[${printCell(grid[r][c])}] `;
+            }
+            console.log(`${rowText}\n`);
+        }
     }
 
     return {
@@ -88,8 +104,9 @@ export const useGridUtilities = (): GridUtilities => {
         getColumnCells,
         getRowCells,
         updateGridCell,
-
-        updateManyCells
+        updateManyCells,
+        cloneGrid,
+        printGrid
     }
 }
 

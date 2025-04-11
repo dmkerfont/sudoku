@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import { Icon } from 'react-native-paper';
 
 export interface EraserButtonProps {
@@ -8,9 +8,9 @@ export interface EraserButtonProps {
 
 export const EraserButton: React.FC<EraserButtonProps> = ({onEraserToggle, isSelected}) => {
     return (
-        <TouchableOpacity onPress={onEraserToggle} style={[styles.button, isSelected ? styles.selected : undefined]}>
+        <Pressable onPress={onEraserToggle} style={[styles.button, isSelected ? styles.selected : undefined]}>
             <Icon source={'eraser'} size={36} color={'#FF69B4'}/>
-        </TouchableOpacity>
+        </Pressable>
     );
 };
 

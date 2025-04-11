@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import { Icon } from 'react-native-paper';
 
 export interface PencilMarkButtonProps {
@@ -8,9 +8,9 @@ export interface PencilMarkButtonProps {
 
 export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({onPencilMarkToggle, isSelected}) => {
     return (
-        <TouchableOpacity onPress={onPencilMarkToggle} style={[styles.button, isSelected ? styles.selected : undefined]}>
+        <Pressable onPress={onPencilMarkToggle} style={[styles.button, isSelected ? styles.selected : undefined]}>
             <Icon source={'pencil-outline'} size={36} color={'#F2C464'}/>
-        </TouchableOpacity>
+        </Pressable>
     );
 };
 

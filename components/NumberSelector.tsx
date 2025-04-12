@@ -3,36 +3,41 @@ import { StyleSheet, Text, View, StyleProp, ViewStyle, Pressable } from "react-n
 
 export interface NumberSelectorProps {
     onNumberSelect: (num: number) => void;
+    getSelectedNumberCount: (selectedNumber: number) => number;
     selectedNumber: number | null;
     style?: StyleProp<ViewStyle>;
 };
 
 export const NumberSelector = (props: NumberSelectorProps) => {
-    const buttonComponents: JSX.Element[] = [] = useMemo(() => {
-        const buttons = [];
-        for(let i = 1; i <= 9; i++){
-            buttons.push(
-                <Pressable 
-                    onPress={() => props.onNumberSelect(i)} 
-                    style={[styles.numberButton, props.selectedNumber === i ? styles.selected : undefined]} 
-                    key={i}
-                >
-                    <Text selectable={false} style={styles.numberText}>{i}</Text>
-                </Pressable>
-            );
-        }
-        return buttons;
-    }, [props.selectedNumber]);
+    const buttons: JSX.Element[] = [];
+    for(let i = 1; i <= 9; i++){
+        const totalCount = props.getSelectedNumberCount(i);
+
+        const buttonStyles: StyleProp<ViewStyle> = [styles.numberButton];
+        totalCount === 9 && buttonStyles.push(styles.disabled);
+        props.selectedNumber === i && buttonStyles.push(styles.selected);
+
+        buttons.push(            
+            <Pressable 
+                onPress={() => props.onNumberSelect(i)} 
+                style={buttonStyles} 
+                key={i}
+            >
+                <Text selectable={false} style={styles.numberText}>{i}</Text>
+                <Text>{`(${totalCount})`}</Text>
+            </Pressable>
+        );
+    }
 
     return (
         <View style={[styles.numbersContainer, props.style]}>
-            {buttonComponents}
+            {buttons}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    numbersContainer: {        
+    numbersContainer: {
         borderWidth: 1,
         borderRadius: 4,
         flexDirection: 'column',
@@ -40,7 +45,7 @@ const styles = StyleSheet.create({
     },
     numberButton: {
         borderWidth: 1,
-        backgroundColor: 'F5F5F5',
+        backgroundColor: 'white',
         borderColor: 'gray',
         alignItems: 'center',
         justifyContent: 'center',
@@ -56,5 +61,8 @@ const styles = StyleSheet.create({
         fontSize: 36,
         lineHeight: 36,
         fontWeight: 'semibold'
+    },
+    disabled: {
+        backgroundColor: 'F5F5F5',
     }
 });

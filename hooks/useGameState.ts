@@ -15,6 +15,7 @@ export interface GameState {
     validateBoard: VoidFunction;
     getBoxCells: (boxNumber: number) => CellState[];
     shouldHighlight: (cell: CellState) => boolean;
+    getSelectedNumberCount: (selectedNumber: number) => number;
     showWinner: boolean;
     isEraserEnabled: boolean;
     isLoading: boolean;
@@ -50,7 +51,7 @@ export const useGameState = (): GameState => {
     const initializeGame = () => {
         setShowWinner(false);
 
-        const gameBoard = generateGameBoard(Difficulty.Easy);
+        const gameBoard = generateGameBoard(Difficulty.Extreme);
         // Source of truth
         setSolvedGrid(gameBoard.solvedGrid);
         setInitialGameBoard(gameBoard.gameGrid);
@@ -62,17 +63,18 @@ export const useGameState = (): GameState => {
         clearErrors();
         let hasErrors = false;
 
-        // TODO: look for errors and mark error state in corresponding cells
+        const boardCopy = GridUtilities.cloneGrid(gameBoard);
 
         for(let r = 0; r < 9; r++){
             for(let c = 0; c < 9; c++){
-                if(gameBoard[r][c].showError){
+                // if not matching the actual value and not 0
+                if(boardCopy[r][c].value !== solvedGrid[r][c].value && boardCopy[r][c].value !== 0){
+                    boardCopy[r][c].showError = true;
                     hasErrors = true;
-                    break;
                 }
             }
-            if(hasErrors) break;
         }
+        setGameBoard(boardCopy);
 
         Platform.select({
             web: () => {
@@ -216,6 +218,11 @@ export const useGameState = (): GameState => {
         return true;
     }
 
+    const getSelectedNumberCount = (num: number): number => {
+        const cells = gameBoard.flatMap(row => row.flatMap(cell => cell));
+        return cells.filter(cell => cell.value === num).length;
+    }
+
     return ({
         initializeGame,
         onCellPress,
@@ -226,6 +233,7 @@ export const useGameState = (): GameState => {
         validateBoard,
         getBoxCells: (boxNumber: number) => GridUtilities.getBoxCells(gameBoard, boxNumber),
         shouldHighlight,
+        getSelectedNumberCount,
         showWinner,
         isEraserEnabled,
         isLoading,

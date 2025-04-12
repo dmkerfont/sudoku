@@ -49,6 +49,7 @@ export default function Index() {
         <NumberSelector 
           onNumberSelect={gameState.selectNumber}
           selectedNumber={gameState.selectedNumber}
+          getSelectedNumberCount={gameState.getSelectedNumberCount}
           style={styles.marginLeft16}
         /> 
 

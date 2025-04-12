@@ -52,6 +52,16 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
     const existsAlready = [...boxCells, ...rowCells, ...columnCells].find(c => c.value === value) !== undefined;
     return !existsAlready;
   }
+
+  // This was from chat gpt, looks good but perhaps add some tests.
+  function shuffleArray<T>(array: T[]): T[] {
+    const shuffled = array.slice(); // make a copy
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // swap
+    }
+    return shuffled;
+  }
   
   /** Recursively tries all combinations of numbers to solve a grid.
       Returns true if the grid is solved. Trying all numbers 1-9 unsuccessfully
@@ -62,8 +72,9 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
   const solveGrid = (grid: CellState[][]): boolean => {
     for(let r = 0; r < 9; r++){
       for(let c = 0; c < 9; c++){
-        if(!grid[r][c].value){
-          for(let value = 1; value <= 9; value++){
+        if(!grid[r][c].value){   
+          const values = shuffleArray([1,2,3,4,5,6,7,8,9]);       
+          for(let value of values){
             if(isValueAllowed(value, r, c, grid)){
               grid[r][c].value = value;
               if(solveGrid(grid)){

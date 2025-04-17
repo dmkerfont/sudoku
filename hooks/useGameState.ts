@@ -16,6 +16,7 @@ export interface GameState {
     getBoxCells: (boxNumber: number) => CellState[];
     shouldHighlight: (cell: CellState) => boolean;
     getSelectedNumberCount: (selectedNumber: number) => number;
+    isInitialCell: (row: number, column: number) => boolean;
     showWinner: boolean;
     isEraserEnabled: boolean;
     isLoading: boolean;
@@ -115,6 +116,12 @@ export const useGameState = (): GameState => {
 
     const onCellPress = (cell: CellState): void => {
         clearErrors();
+
+        // don't modify these cells
+        const isInitialCell = initialGameBoard[cell.row][cell.column].value > 0;
+        if (isInitialCell) {
+            return;
+        }
 
         if (isEraserEnabled) {
             const update: CellState = {
@@ -268,6 +275,7 @@ export const useGameState = (): GameState => {
             GridUtilities.getBoxCells(gameBoard, boxNumber),
         shouldHighlight,
         getSelectedNumberCount,
+        isInitialCell: (row: number, column: number) => initialGameBoard[row][column].value > 0,
         showWinner,
         isEraserEnabled,
         isLoading,

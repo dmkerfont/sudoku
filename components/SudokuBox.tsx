@@ -17,6 +17,7 @@ export const SudokuBox = (props: SudokuBoxProps) => {
                 state={cell}
                 key={index}
                 showHighlight={gameState.shouldHighlight(cell)}
+                isBold={gameState.isInitialCell(cell.row, cell.column)}
             />
         );
     });

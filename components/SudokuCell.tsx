@@ -14,6 +14,7 @@ export interface SudokuCellProps {
     state: CellState;
     onPress: (cell: CellState) => void;
     showHighlight: boolean;
+    isBold: boolean;
 }
 
 export const SudokuCell = (props: SudokuCellProps) => {
@@ -21,7 +22,7 @@ export const SudokuCell = (props: SudokuCellProps) => {
 
     const onPress = () => props.onPress(props.state);
 
-    const style: StyleProp<ViewStyle> = useMemo(() => {
+    const containerStyle: StyleProp<ViewStyle> = useMemo(() => {
         const result: StyleProp<ViewStyle> = [styles.sudokuCell];
         props.showHighlight && result.push(styles.highLight);
         showError && result.push(styles.errorBorder);
@@ -31,8 +32,14 @@ export const SudokuCell = (props: SudokuCellProps) => {
 
     if (value) {
         return (
-            <Pressable onPress={onPress} style={style}>
-                <Text selectable={false} style={styles.valueText}>
+            <Pressable onPress={onPress} style={containerStyle}>
+                <Text
+                    selectable={false}
+                    style={[
+                        styles.valueText,
+                        props.isBold ? styles.bold : undefined,
+                    ]}
+                >
                     {value}
                 </Text>
             </Pressable>
@@ -51,7 +58,7 @@ export const SudokuCell = (props: SudokuCellProps) => {
     }
 
     return (
-        <TouchableOpacity onPress={onPress} style={style}>
+        <TouchableOpacity onPress={onPress} style={containerStyle}>
             {pencilMarks}
         </TouchableOpacity>
     );
@@ -71,7 +78,6 @@ const styles = StyleSheet.create({
     },
     valueText: {
         fontSize: 36,
-        fontWeight: 'semibold',
     },
     pencilMarkContainer: {
         flexBasis: '33.33%',
@@ -89,5 +95,8 @@ const styles = StyleSheet.create({
     },
     highLight: {
         backgroundColor: '#99e6ff',
+    },
+    bold: {
+        fontWeight: '600',
     },
 });

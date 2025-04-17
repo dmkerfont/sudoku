@@ -12,10 +12,12 @@ export const NumberSelector = (props: NumberSelectorProps) => {
     const buttons: JSX.Element[] = [];
     for(let i = 1; i <= 9; i++){
         const totalCount = props.getSelectedNumberCount(i);
+        const isSelected = props.selectedNumber === i;
 
-        const buttonStyles: StyleProp<ViewStyle> = [styles.numberButton];
-        totalCount === 9 && buttonStyles.push(styles.disabled);
-        props.selectedNumber === i && buttonStyles.push(styles.selected);
+        const buttonStyles: StyleProp<ViewStyle> = [
+            styles.numberButton,
+            (totalCount === 9) ? styles.disabled : undefined
+        ];        
 
         buttons.push(            
             <Pressable 
@@ -23,8 +25,8 @@ export const NumberSelector = (props: NumberSelectorProps) => {
                 style={buttonStyles} 
                 key={i}
             >
-                <Text selectable={false} style={styles.numberText}>{i}</Text>
-                <Text>{`(${totalCount})`}</Text>
+                <Text selectable={false} style={[styles.numberText, isSelected ? styles.selectedText : undefined]}>{i}</Text>
+                <Text selectable={false}>{`(${totalCount})`}</Text>
             </Pressable>
         );
     }
@@ -52,17 +54,19 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
         height: `${100/9}%`
     },
+    selectedText: {
+        fontWeight: '600',
+        fontSize: 36,
+        lineHeight: 36,
+    },
     selected: {
-        borderWidth: 2,
-        borderColor: 'blue',
         backgroundColor: '#99e6ff'
     },
     numberText: {
-        fontSize: 36,
-        lineHeight: 36,
-        fontWeight: 'semibold'
+        fontSize: 27,
+        lineHeight: 27,
     },
     disabled: {
-        backgroundColor: 'F5F5F5',
-    }
+        backgroundColor: '#D3D3D3',
+    },
 });

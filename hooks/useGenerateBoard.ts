@@ -183,11 +183,9 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
     const grid = initEmptyGrid();
 
     solveGrid(grid);
-    console.log('solved grid:');
     GridUtilities.printGrid(grid, (cell => cell.value.toString()));
 
     const gameGrid = createGameGrid(grid,  Difficulty.Easy);
-    console.log('generated puzzle');
     GridUtilities.printGrid(gameGrid, (cell => cell.value.toString()));
 
     return {

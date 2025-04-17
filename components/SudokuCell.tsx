@@ -1,6 +1,14 @@
-import { CellState } from "@/types/CellState";
-import { useMemo } from "react";
-import { StyleSheet, Text, Pressable, View, TouchableOpacity, StyleProp, ViewStyle } from "react-native";
+import { CellState } from '@/types/CellState';
+import { useMemo } from 'react';
+import {
+    StyleSheet,
+    Text,
+    Pressable,
+    View,
+    TouchableOpacity,
+    StyleProp,
+    ViewStyle,
+} from 'react-native';
 
 export interface SudokuCellProps {
     state: CellState;
@@ -8,8 +16,8 @@ export interface SudokuCellProps {
     showHighlight: boolean;
 }
 
-export const SudokuCell = (props: SudokuCellProps) => { 
-    const {value, showError} = props.state;
+export const SudokuCell = (props: SudokuCellProps) => {
+    const { value, showError } = props.state;
 
     const onPress = () => props.onPress(props.state);
 
@@ -20,27 +28,31 @@ export const SudokuCell = (props: SudokuCellProps) => {
 
         return result;
     }, [props.showHighlight, showError]);
-    
-    if(value){
+
+    if (value) {
         return (
             <Pressable onPress={onPress} style={style}>
-                <Text selectable={false} style={styles.valueText}>{value}</Text>
+                <Text selectable={false} style={styles.valueText}>
+                    {value}
+                </Text>
             </Pressable>
         );
     }
 
     const pencilMarks = [];
-    for (let i = 1; i <= 9; i++){
+    for (let i = 1; i <= 9; i++) {
         pencilMarks.push(
             <View style={styles.pencilMarkContainer} key={i}>
-                <Text selectable={false} style={styles.pencilMarkText}>{props.state.pencilMarks?.includes(i) ? i : undefined}</Text>
+                <Text selectable={false} style={styles.pencilMarkText}>
+                    {props.state.pencilMarks?.includes(i) ? i : undefined}
+                </Text>
             </View>
         );
     }
 
     return (
         <TouchableOpacity onPress={onPress} style={style}>
-            {pencilMarks}            
+            {pencilMarks}
         </TouchableOpacity>
     );
 };
@@ -59,7 +71,7 @@ const styles = StyleSheet.create({
     },
     valueText: {
         fontSize: 36,
-        fontWeight: 'semibold'
+        fontWeight: 'semibold',
     },
     pencilMarkContainer: {
         flexBasis: '33.33%',
@@ -67,15 +79,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    pencilMarkText: {        
+    pencilMarkText: {
         fontSize: 14,
-        lineHeight: 14
+        lineHeight: 14,
     },
     errorBorder: {
         borderWidth: 2,
-        borderColor: 'red'
+        borderColor: 'red',
     },
     highLight: {
-        backgroundColor: '#99e6ff'
-    }
+        backgroundColor: '#99e6ff',
+    },
 });

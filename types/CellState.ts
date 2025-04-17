@@ -1,6 +1,6 @@
-import { Cell } from "./Cell";
+import { Cell } from './Cell';
 
-export interface CellState extends Cell {    
+export interface CellState extends Cell {
     pencilMarks: number[];
     showError: boolean;
 }

@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export interface PencilMarkButtonProps {
@@ -6,31 +6,45 @@ export interface PencilMarkButtonProps {
     isSelected: boolean;
 }
 
-export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({onPencilMarkToggle, isSelected}) => {
-
+export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
+    onPencilMarkToggle,
+    isSelected,
+}) => {
     const pencilMarks = [];
-    for (let i = 1; i <= 9; i++){
+    for (let i = 1; i <= 9; i++) {
         pencilMarks.push(
             <View style={styles.pencilMarkContainer} key={i}>
-                <Text selectable={false} style={styles.pencilMarkText}>{i}</Text>
+                <Text selectable={false} style={styles.pencilMarkText}>
+                    {i}
+                </Text>
             </View>
         );
     }
 
-    if(isSelected){
-        return(
-            <Pressable onPress={onPencilMarkToggle} style={[styles.button, styles.sudokuCell, styles.selected ]}>
+    if (isSelected) {
+        return (
+            <Pressable
+                onPress={onPencilMarkToggle}
+                style={[styles.button, styles.sudokuCell, styles.selected]}
+            >
                 {pencilMarks}
-                <View style={{position: 'absolute'}}>
-                    <Icon source={'pencil-outline'} size={36} color={'#F2C464'}/>
+                <View style={{ position: 'absolute' }}>
+                    <Icon
+                        source={'pencil-outline'}
+                        size={36}
+                        color={'#F2C464'}
+                    />
                 </View>
             </Pressable>
         );
     }
-    
+
     return (
-        <Pressable onPress={onPencilMarkToggle} style={[styles.button, styles.sudokuCell, ]}>
-            <Icon source={'pencil-outline'} size={36} color={'#808080'}/>
+        <Pressable
+            onPress={onPencilMarkToggle}
+            style={[styles.button, styles.sudokuCell]}
+        >
+            <Icon source={'pencil-outline'} size={36} color={'#808080'} />
         </Pressable>
     );
 };
@@ -44,10 +58,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         aspectRatio: 1,
-        height: `${100/9}%`
+        height: `${100 / 9}%`,
     },
     selected: {
-        backgroundColor: '#99e6ff'
+        backgroundColor: '#99e6ff',
     },
     sudokuCell: {
         flexDirection: 'row',
@@ -60,8 +74,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    pencilMarkText: {        
+    pencilMarkText: {
         fontSize: 14,
-        lineHeight: 14
+        lineHeight: 14,
     },
 });

@@ -1,6 +1,6 @@
-import { StyleSheet, View } from "react-native";
-import { SudokuCell } from "./SudokuCell";
-import { GameState } from "@/hooks/useGameState";
+import { StyleSheet, View } from 'react-native';
+import { SudokuCell } from './SudokuCell';
+import { GameState } from '@/hooks/useGameState';
 
 export interface SudokuBoxProps {
     gameState: GameState;
@@ -10,22 +10,18 @@ export interface SudokuBoxProps {
 export const SudokuBox = (props: SudokuBoxProps) => {
     const { boxNumber, gameState } = props;
 
-    const cells = gameState.getBoxCells(boxNumber).map((cell, index) => {        
+    const cells = gameState.getBoxCells(boxNumber).map((cell, index) => {
         return (
-            <SudokuCell 
-                onPress={gameState.onCellPress} 
-                state={cell} 
+            <SudokuCell
+                onPress={gameState.onCellPress}
+                state={cell}
                 key={index}
                 showHighlight={gameState.shouldHighlight(cell)}
             />
         );
     });
 
-    return (
-        <View style={styles.sudokuBox}>
-            {cells}
-        </View>
-    );
+    return <View style={styles.sudokuBox}>{cells}</View>;
 };
 
 const styles = StyleSheet.create({

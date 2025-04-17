@@ -1,3 +1,4 @@
+import { UseDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
 import {
     StyleSheet,
     Text,
@@ -15,6 +16,8 @@ export interface NumberSelectorProps {
 }
 
 export const NumberSelector = (props: NumberSelectorProps) => {
+    const { cellFontSizes, onCellLayoutEvent } = UseDynamicFontSizes();
+
     const buttons: JSX.Element[] = [];
     for (let i = 1; i <= 9; i++) {
         const totalCount = props.getSelectedNumberCount(i);
@@ -29,18 +32,24 @@ export const NumberSelector = (props: NumberSelectorProps) => {
             <Pressable
                 onPress={() => props.onNumberSelect(i)}
                 style={buttonStyles}
+                onLayout={onCellLayoutEvent}
                 key={i}
             >
                 <Text
                     selectable={false}
                     style={[
-                        styles.numberText,
-                        isSelected ? styles.selectedText : undefined,
+                        cellFontSizes.cellFontMedium,
+                        isSelected
+                            ? [styles.selectedText, cellFontSizes.cellFontLarge]
+                            : undefined,
                     ]}
                 >
                     {i}
                 </Text>
-                <Text selectable={false}>{`(${totalCount})`}</Text>
+                <Text
+                    style={cellFontSizes.cellPencilMarkFont}
+                    selectable={false}
+                >{`(${totalCount})`}</Text>
             </Pressable>
         );
     }
@@ -68,15 +77,9 @@ const styles = StyleSheet.create({
     },
     selectedText: {
         fontWeight: '600',
-        fontSize: 36,
-        lineHeight: 36,
     },
     selected: {
         backgroundColor: '#99e6ff',
-    },
-    numberText: {
-        fontSize: 27,
-        lineHeight: 27,
     },
     disabled: {
         backgroundColor: '#D3D3D3',

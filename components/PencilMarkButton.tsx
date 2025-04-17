@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { UseDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export interface PencilMarkButtonProps {
@@ -10,11 +11,16 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
     onPencilMarkToggle,
     isSelected,
 }) => {
+    const { cellFontSizes, onCellLayoutEvent } = UseDynamicFontSizes();
+
     const pencilMarks = [];
     for (let i = 1; i <= 9; i++) {
         pencilMarks.push(
             <View style={styles.pencilMarkContainer} key={i}>
-                <Text selectable={false} style={styles.pencilMarkText}>
+                <Text
+                    selectable={false}
+                    style={cellFontSizes.cellPencilMarkFont}
+                >
                     {i}
                 </Text>
             </View>
@@ -23,29 +29,37 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
 
     if (isSelected) {
         return (
-            <Pressable
+            <TouchableOpacity
+                activeOpacity={1}
                 onPress={onPencilMarkToggle}
                 style={[styles.button, styles.sudokuCell, styles.selected]}
+                onLayout={onCellLayoutEvent}
             >
                 {pencilMarks}
                 <View style={{ position: 'absolute' }}>
                     <Icon
                         source={'pencil-outline'}
-                        size={36}
+                        size={cellFontSizes.cellFontLarge.fontSize || 36}
                         color={'#F2C464'}
                     />
                 </View>
-            </Pressable>
+            </TouchableOpacity>
         );
     }
 
     return (
-        <Pressable
+        <TouchableOpacity
+            activeOpacity={1}
             onPress={onPencilMarkToggle}
+            onLayout={onCellLayoutEvent}
             style={[styles.button, styles.sudokuCell]}
         >
-            <Icon source={'pencil-outline'} size={36} color={'#808080'} />
-        </Pressable>
+            <Icon
+                source={'pencil-outline'}
+                size={cellFontSizes.cellFontLarge.fontSize || 36}
+                color={'#808080'}
+            />
+        </TouchableOpacity>
     );
 };
 
@@ -73,9 +87,5 @@ const styles = StyleSheet.create({
         height: '33.33%',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    pencilMarkText: {
-        fontSize: 14,
-        lineHeight: 14,
     },
 });

@@ -1,5 +1,5 @@
+import { UseDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
 import { CellState } from '@/types/CellState';
-import { useMemo } from 'react';
 import {
     StyleSheet,
     Text,
@@ -19,24 +19,25 @@ export interface SudokuCellProps {
 
 export const SudokuCell = (props: SudokuCellProps) => {
     const { value, showError } = props.state;
-
     const onPress = () => props.onPress(props.state);
 
-    const containerStyle: StyleProp<ViewStyle> = useMemo(() => {
-        const result: StyleProp<ViewStyle> = [styles.sudokuCell];
-        props.showHighlight && result.push(styles.highLight);
-        showError && result.push(styles.errorBorder);
+    const containerStyle: StyleProp<ViewStyle> = [styles.sudokuCell];
+    props.showHighlight && containerStyle.push(styles.highLight);
+    showError && containerStyle.push(styles.errorBorder);
 
-        return result;
-    }, [props.showHighlight, showError]);
+    const { onCellLayoutEvent, cellFontSizes } = UseDynamicFontSizes();
 
     if (value) {
         return (
-            <Pressable onPress={onPress} style={containerStyle}>
+            <Pressable
+                onPress={onPress}
+                style={containerStyle}
+                onLayout={onCellLayoutEvent}
+            >
                 <Text
                     selectable={false}
                     style={[
-                        styles.valueText,
+                        cellFontSizes.cellFontLarge,
                         props.isBold ? styles.bold : undefined,
                     ]}
                 >
@@ -50,7 +51,10 @@ export const SudokuCell = (props: SudokuCellProps) => {
     for (let i = 1; i <= 9; i++) {
         pencilMarks.push(
             <View style={styles.pencilMarkContainer} key={i}>
-                <Text selectable={false} style={styles.pencilMarkText}>
+                <Text
+                    selectable={false}
+                    style={cellFontSizes.cellPencilMarkFont}
+                >
                     {props.state.pencilMarks?.includes(i) ? i : undefined}
                 </Text>
             </View>
@@ -58,7 +62,11 @@ export const SudokuCell = (props: SudokuCellProps) => {
     }
 
     return (
-        <TouchableOpacity onPress={onPress} style={containerStyle}>
+        <TouchableOpacity
+            onPress={onPress}
+            style={containerStyle}
+            onLayout={onCellLayoutEvent}
+        >
             {pencilMarks}
         </TouchableOpacity>
     );
@@ -76,18 +84,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
     },
-    valueText: {
-        fontSize: 36,
-    },
     pencilMarkContainer: {
         flexBasis: '33.33%',
         height: '33.33%',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    pencilMarkText: {
-        fontSize: 14,
-        lineHeight: 14,
     },
     errorBorder: {
         borderWidth: 2,

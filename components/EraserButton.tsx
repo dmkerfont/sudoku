@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { UseDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
+import { Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export interface EraserButtonProps {
@@ -10,17 +11,21 @@ export const EraserButton: React.FC<EraserButtonProps> = ({
     onEraserToggle,
     isSelected,
 }) => {
+    const { cellFontSizes, onCellLayoutEvent } = UseDynamicFontSizes();
+
     return (
-        <Pressable
+        <TouchableOpacity
+            activeOpacity={1}
             onPress={onEraserToggle}
             style={[styles.button, isSelected ? styles.selected : undefined]}
+            onLayout={onCellLayoutEvent}
         >
             <Icon
                 source={'eraser'}
-                size={36}
+                size={cellFontSizes.cellFontLarge.fontSize || 36}
                 color={isSelected ? '#FF69B4' : '#808080'}
             />
-        </Pressable>
+        </TouchableOpacity>
     );
 };
 

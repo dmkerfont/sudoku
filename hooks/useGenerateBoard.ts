@@ -145,12 +145,12 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
     ): CellState[][] => {
         // min/max number of clues to be left on the board
         const difficultyMap: Record<Difficulty, { min: number; max: number }> =
-            {
-                Easy: { min: 36, max: 40 },
-                Medium: { min: 30, max: 35 },
-                Hard: { min: 24, max: 29 },
-                Extreme: { min: 17, max: 24 },
-            };
+        {
+            Easy: { min: 36, max: 40 },
+            Medium: { min: 30, max: 35 },
+            Hard: { min: 24, max: 29 },
+            Extreme: { min: 17, max: 24 },
+        };
 
         const clonedGrid = GridUtilities.cloneGrid(grid);
         const gameGrid: CellState[][] = clonedGrid.map(row =>
@@ -204,10 +204,10 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
         const grid = initEmptyGrid();
 
         solveGrid(grid);
-        GridUtilities.printGrid(grid, cell => cell.value.toString());
+        // GridUtilities.printGrid(grid, cell => cell.value.toString());
 
         const gameGrid = createGameGrid(grid, Difficulty.Easy);
-        GridUtilities.printGrid(gameGrid, cell => cell.value.toString());
+        // GridUtilities.printGrid(gameGrid, cell => cell.value.toString());
 
         return {
             difficulty,

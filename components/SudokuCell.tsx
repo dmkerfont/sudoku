@@ -1,4 +1,4 @@
-import { UseDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
+import { useDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
 import { CellState } from '@/types/CellState';
 import {
     StyleSheet,
@@ -25,19 +25,15 @@ export const SudokuCell = (props: SudokuCellProps) => {
     props.showHighlight && containerStyle.push(styles.highLight);
     showError && containerStyle.push(styles.errorBorder);
 
-    const { onCellLayoutEvent, cellFontSizes } = UseDynamicFontSizes();
+    const { cellFontStyles } = useDynamicFontSizes();
 
     if (value) {
         return (
-            <Pressable
-                onPress={onPress}
-                style={containerStyle}
-                onLayout={onCellLayoutEvent}
-            >
+            <Pressable onPress={onPress} style={containerStyle}>
                 <Text
                     selectable={false}
                     style={[
-                        cellFontSizes.cellFontLarge,
+                        cellFontStyles.cellFontLarge,
                         props.isBold ? styles.bold : undefined,
                     ]}
                 >
@@ -53,7 +49,7 @@ export const SudokuCell = (props: SudokuCellProps) => {
             <View style={styles.pencilMarkContainer} key={i}>
                 <Text
                     selectable={false}
-                    style={cellFontSizes.cellPencilMarkFont}
+                    style={cellFontStyles.cellPencilMarkFont}
                 >
                     {props.state.pencilMarks?.includes(i) ? i : undefined}
                 </Text>
@@ -62,11 +58,7 @@ export const SudokuCell = (props: SudokuCellProps) => {
     }
 
     return (
-        <TouchableOpacity
-            onPress={onPress}
-            style={containerStyle}
-            onLayout={onCellLayoutEvent}
-        >
+        <TouchableOpacity onPress={onPress} style={containerStyle}>
             {pencilMarks}
         </TouchableOpacity>
     );

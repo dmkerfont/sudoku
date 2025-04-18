@@ -1,4 +1,4 @@
-import { UseDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
+import { useDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
 import {
     StyleSheet,
     Text,
@@ -16,7 +16,7 @@ export interface NumberSelectorProps {
 }
 
 export const NumberSelector = (props: NumberSelectorProps) => {
-    const { cellFontSizes, onCellLayoutEvent } = UseDynamicFontSizes();
+    const { cellFontStyles } = useDynamicFontSizes();
 
     const buttons: JSX.Element[] = [];
     for (let i = 1; i <= 9; i++) {
@@ -32,22 +32,24 @@ export const NumberSelector = (props: NumberSelectorProps) => {
             <Pressable
                 onPress={() => props.onNumberSelect(i)}
                 style={buttonStyles}
-                onLayout={onCellLayoutEvent}
                 key={i}
             >
                 <Text
                     selectable={false}
                     style={[
-                        cellFontSizes.cellFontMedium,
+                        cellFontStyles.cellFontMedium,
                         isSelected
-                            ? [styles.selectedText, cellFontSizes.cellFontLarge]
+                            ? [
+                                  styles.selectedText,
+                                  cellFontStyles.cellFontLarge,
+                              ]
                             : undefined,
                     ]}
                 >
                     {i}
                 </Text>
                 <Text
-                    style={cellFontSizes.cellPencilMarkFont}
+                    style={cellFontStyles.cellPencilMarkFont}
                     selectable={false}
                 >{`(${totalCount})`}</Text>
             </Pressable>

@@ -1,8 +1,6 @@
-import { EraserButton } from '@/components/EraserButton';
-import { NumberSelector } from '@/components/NumberSelector';
-import { PencilMarkButton } from '@/components/PencilMarkButton';
-import { SudokuBox } from '@/components/SudokuBox';
+import { GameBoard } from '@/components/GameBoard';
 import { WinnerModal } from '@/components/WinnerModal';
+import { CellSizeContextProvider } from '@/hooks/context/CellSizeContext';
 import { useGameState } from '@/hooks/useGameState';
 import {
     ActivityIndicator,
@@ -24,67 +22,39 @@ export default function Index() {
     }
 
     return (
-        <View style={styles.pageContainer}>
-            <View style={styles.headerButtonsContainer}>
-                <TouchableOpacity
-                    style={styles.flex1}
-                    onPress={gameState.initializeGame}
-                >
-                    <Text style={styles.headerButton}>New Board</Text>
-                </TouchableOpacity>
+        <CellSizeContextProvider>
+            <View style={styles.pageContainer}>
+                <View style={styles.headerButtonsContainer}>
+                    <TouchableOpacity
+                        style={styles.flex1}
+                        onPress={gameState.initializeGame}
+                    >
+                        <Text style={styles.headerButton}>New Board</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.flex1}
-                    onPress={gameState.resetGame}
-                >
-                    <Text style={styles.headerButton}>Reset</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.flex1}
+                        onPress={gameState.resetGame}
+                    >
+                        <Text style={styles.headerButton}>Reset</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.flex1}
-                    onPress={gameState.validateBoard}
-                >
-                    <Text style={styles.headerButton}>Validate</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={{ flexDirection: 'row', height: '80%' }}>
-                <View style={styles.gameBoard}>
-                    <SudokuBox boxNumber={0} gameState={gameState} />
-                    <SudokuBox boxNumber={1} gameState={gameState} />
-                    <SudokuBox boxNumber={2} gameState={gameState} />
-                    <SudokuBox boxNumber={3} gameState={gameState} />
-                    <SudokuBox boxNumber={4} gameState={gameState} />
-                    <SudokuBox boxNumber={5} gameState={gameState} />
-                    <SudokuBox boxNumber={6} gameState={gameState} />
-                    <SudokuBox boxNumber={7} gameState={gameState} />
-                    <SudokuBox boxNumber={8} gameState={gameState} />
+                    <TouchableOpacity
+                        style={styles.flex1}
+                        onPress={gameState.validateBoard}
+                    >
+                        <Text style={styles.headerButton}>Validate</Text>
+                    </TouchableOpacity>
                 </View>
 
-                <NumberSelector
-                    onNumberSelect={gameState.selectNumber}
-                    selectedNumber={gameState.selectedNumber}
-                    getSelectedNumberCount={gameState.getSelectedNumberCount}
-                    style={styles.marginLeft16}
+                <GameBoard gameState={gameState} />
+
+                <WinnerModal
+                    show={gameState.showWinner}
+                    onNewGamePress={gameState.initializeGame}
                 />
-
-                <View style={[styles.column, styles.marginLeft16]}>
-                    <EraserButton
-                        onEraserToggle={gameState.toggleEraser}
-                        isSelected={gameState.isEraserEnabled}
-                    />
-                    <PencilMarkButton
-                        onPencilMarkToggle={gameState.togglePencilMarks}
-                        isSelected={gameState.pencilMarksEnabled}
-                    />
-                </View>
             </View>
-
-            <WinnerModal
-                show={gameState.showWinner}
-                onNewGamePress={gameState.initializeGame}
-            />
-        </View>
+        </CellSizeContextProvider>
     );
 }
 
@@ -94,18 +64,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
-    },
-    gameBoard: {
-        aspectRatio: 1,
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-
-        backgroundColor: 'white',
-        borderColor: 'gray',
-        borderRadius: 4,
-    },
-    marginLeft16: {
-        marginLeft: 16,
     },
     column: {
         flexDirection: 'column',
@@ -119,9 +77,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 16,
         width: '40%',
-    },
-    marginHorizontal16: {
-        marginHorizontal: 16,
     },
     headerButton: {
         fontSize: 16,

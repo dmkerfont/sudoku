@@ -1,4 +1,4 @@
-import { UseDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
+import { useDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 
@@ -11,7 +11,7 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
     onPencilMarkToggle,
     isSelected,
 }) => {
-    const { cellFontSizes, onCellLayoutEvent } = UseDynamicFontSizes();
+    const { cellFontStyles } = useDynamicFontSizes();
 
     const pencilMarks = [];
     for (let i = 1; i <= 9; i++) {
@@ -19,7 +19,7 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
             <View style={styles.pencilMarkContainer} key={i}>
                 <Text
                     selectable={false}
-                    style={cellFontSizes.cellPencilMarkFont}
+                    style={cellFontStyles.cellPencilMarkFont}
                 >
                     {i}
                 </Text>
@@ -33,13 +33,12 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
                 activeOpacity={1}
                 onPress={onPencilMarkToggle}
                 style={[styles.button, styles.sudokuCell, styles.selected]}
-                onLayout={onCellLayoutEvent}
             >
                 {pencilMarks}
                 <View style={{ position: 'absolute' }}>
                     <Icon
                         source={'pencil-outline'}
-                        size={cellFontSizes.cellFontLarge.fontSize || 36}
+                        size={cellFontStyles.cellFontLarge.fontSize || 36}
                         color={'#F2C464'}
                     />
                 </View>
@@ -51,12 +50,11 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
         <TouchableOpacity
             activeOpacity={1}
             onPress={onPencilMarkToggle}
-            onLayout={onCellLayoutEvent}
             style={[styles.button, styles.sudokuCell]}
         >
             <Icon
                 source={'pencil-outline'}
-                size={cellFontSizes.cellFontLarge.fontSize || 36}
+                size={cellFontStyles.cellFontLarge.fontSize || 36}
                 color={'#808080'}
             />
         </TouchableOpacity>

@@ -1,5 +1,5 @@
 import { StyleSheet, TextStyle } from 'react-native';
-import { useCellSizeContext as useCellSizeContext } from './context/CellSizeContext';
+import { useBoardSizeContext as useBoardSizeContext } from './context/BoardSizeContext';
 
 export interface DynmamicFontStyles {
     cellFontLarge: TextStyle;
@@ -9,11 +9,11 @@ export interface DynmamicFontStyles {
 
 export interface UseDynamicFontSizesObject {
     cellFontStyles: DynmamicFontStyles;
-    cellSize: number;
+    cellSize: number; // TODO: check if used
 }
 
 export const useDynamicFontSizes = (): UseDynamicFontSizesObject => {
-    const { cellSize } = useCellSizeContext();
+    const { cellSize } = useBoardSizeContext();
 
     const largeFont = cellSize / 2;
     const mediumFont = (largeFont * 3) / 4;

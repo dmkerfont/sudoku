@@ -1,92 +1,123 @@
-import { GameBoard } from '@/components/GameBoard';
-import { WinnerModal } from '@/components/WinnerModal';
-import { CellSizeContextProvider } from '@/hooks/context/CellSizeContext';
-import { useGameState } from '@/hooks/useGameState';
+import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    StyleSheet,
+    View,
     Text,
     TouchableOpacity,
-    View,
+    StyleSheet,
+    useWindowDimensions,
+    Modal,
+    ActivityIndicator,
 } from 'react-native';
+import { GameBoard } from '@/components/GameBoard';
+import { useGameState } from '@/hooks/useGameState';
+import { BoardSizeContextProvider } from '@/hooks/context/BoardSizeContext';
+import { ButtonsContainer } from '@/components/ButtonsContainer';
 
-export default function Index() {
+export default function App() {
+    const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
     const gameState = useGameState();
+
+    const { width } = useWindowDimensions();
+    const isMobileLayout = width < 768;
 
     if (gameState.isLoading) {
         return (
-            <View style={styles.pageContainer}>
+            <View style={styles.loadingContainer}>
                 <ActivityIndicator />
             </View>
         );
     }
 
-    return (
-        <CellSizeContextProvider>
-            <View style={styles.pageContainer}>
-                <View style={styles.headerButtonsContainer}>
-                    <TouchableOpacity
-                        style={styles.flex1}
-                        onPress={gameState.initializeGame}
-                    >
-                        <Text style={styles.headerButton}>New Board</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.flex1}
-                        onPress={gameState.resetGame}
-                    >
-                        <Text style={styles.headerButton}>Reset</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.flex1}
-                        onPress={gameState.validateBoard}
-                    >
-                        <Text style={styles.headerButton}>Validate</Text>
-                    </TouchableOpacity>
+    const renderBottomSheet = () => (
+        <Modal
+            visible={bottomSheetVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setBottomSheetVisible(false)}
+        >
+            <TouchableOpacity
+                style={styles.modalOverlay}
+                activeOpacity={1}
+                onPressOut={() => setBottomSheetVisible(false)}
+            >
+                <View style={styles.bottomSheetContainer}>
+                    {['Button1', 'Button2', 'Button3'].map(label => (
+                        <TouchableOpacity
+                            key={label}
+                            style={styles.bottomSheetButton}
+                            onPress={() => {
+                                console.log(`${label} pressed`);
+                                setBottomSheetVisible(false);
+                            }}
+                        >
+                            <Text>{label}</Text>
+                        </TouchableOpacity>
+                    ))}
                 </View>
+            </TouchableOpacity>
+        </Modal>
+    );
 
-                <GameBoard gameState={gameState} />
+    return (
+        <BoardSizeContextProvider>
+            <View
+                style={[
+                    styles.container,
+                    isMobileLayout
+                        ? { flexDirection: 'column' }
+                        : {
+                              alignSelf: 'center',
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              maxWidth: 1200,
+                          },
+                ]}
+            >
+                {renderBottomSheet()}
 
-                <WinnerModal
-                    show={gameState.showWinner}
-                    onNewGamePress={gameState.initializeGame}
+                <GameBoard
+                    gameState={gameState}
+                    isMobileLayout={isMobileLayout}
+                />
+
+                <View style={{ margin: 16 }} />
+
+                <ButtonsContainer
+                    gameState={gameState}
+                    isMobileLayout={isMobileLayout}
+                    onMenuButtonPressed={() => setBottomSheetVisible(true)}
                 />
             </View>
-        </CellSizeContextProvider>
+        </BoardSizeContextProvider>
     );
 }
 
 const styles = StyleSheet.create({
-    pageContainer: {
+    loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
     },
-    column: {
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    flex1: {
+    container: {
         flex: 1,
     },
-    headerButtonsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 16,
-        width: '40%',
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        justifyContent: 'flex-end',
     },
-    headerButton: {
-        fontSize: 16,
-        borderWidth: 1,
-        borderRadius: 4,
+    bottomSheetContainer: {
         backgroundColor: 'white',
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        marginHorizontal: 8,
-        flex: 1,
-        textAlign: 'center',
+        padding: 20,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+    },
+    bottomSheetButton: {
+        padding: 16,
+        marginVertical: 8,
+        backgroundColor: '#eee',
+        borderRadius: 8,
+        alignItems: 'center',
     },
 });

@@ -60,7 +60,7 @@ export const ButtonsContainer: React.FC<ButtonsContainerProps> = ({
                 <Text
                     selectable={false}
                     style={[
-                        cellFontStyles.cellFontMedium,
+                        cellFontStyles.numberSelectorFont,
                         isSelected
                             ? [
                                   styles.selectedText,

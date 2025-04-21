@@ -5,6 +5,7 @@ export interface DynmamicFontStyles {
     cellFontLarge: TextStyle;
     cellFontMedium: TextStyle;
     cellPencilMarkFont: TextStyle;
+    numberSelectorFont: TextStyle;
 }
 
 export interface UseDynamicFontSizesObject {
@@ -31,6 +32,10 @@ export const useDynamicFontSizes = (): UseDynamicFontSizesObject => {
         cellPencilMarkFont: {
             fontSize: pencilMarkSize,
             lineHeight: pencilMarkSize,
+        },
+        numberSelectorFont: {
+            fontSize: (mediumFont * 9) / 6,
+            lineHeight: (mediumFont * 9) / 6,
         },
     });
 

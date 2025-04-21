@@ -21,7 +21,7 @@ export const HamburgerMenuButton: React.FC<HamburgerMenuButtonProps> = ({
         >
             <Icon
                 source={'menu'}
-                size={cellFontStyles.cellFontLarge.fontSize || 36}
+                size={cellFontStyles.numberSelectorFont.fontSize || 36}
                 color={'#808080'}
             />
         </TouchableOpacity>

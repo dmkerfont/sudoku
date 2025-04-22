@@ -29,13 +29,18 @@ export const ButtonsContainer: React.FC<ButtonsContainerProps> = ({
 
     const buttonMargin = 2;
     const buttonsPerRow = 6;
-    const containerPadding = 4;
+    const containerPadding = 2;
+
+    // at some certain aspect ratio the buttons and board began to wiggle, reducing button size seems to have helped.
+    const wiggleRoom = 2;
 
     const buttonSize =
-        (boardSize -
-            containerPadding * 2 -
-            buttonsPerRow * (buttonMargin * 2)) /
-        buttonsPerRow;
+        Math.floor(
+            (boardSize -
+                containerPadding * 2 -
+                buttonsPerRow * (buttonMargin * 2)) /
+                buttonsPerRow
+        ) - wiggleRoom;
 
     const numberButtons: JSX.Element[] = [];
     for (let i = 1; i <= 9; i++) {
@@ -60,11 +65,11 @@ export const ButtonsContainer: React.FC<ButtonsContainerProps> = ({
                 <Text
                     selectable={false}
                     style={[
-                        cellFontStyles.numberSelectorFont,
+                        cellFontStyles.cellFontLarge,
                         isSelected
                             ? [
                                   styles.selectedText,
-                                  cellFontStyles.cellFontLarge,
+                                  cellFontStyles.numberSelectorFont,
                               ]
                             : undefined,
                     ]}

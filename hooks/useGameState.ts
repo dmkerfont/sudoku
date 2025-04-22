@@ -1,12 +1,12 @@
 import { CellState } from '@/types/CellState';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { useGridUtilities } from './useGridUtilities';
 import { Difficulty, useGenerateBoard } from './useGenerateBoard';
 import { Cell } from '@/types/Cell';
 
 export interface GameState {
-    initializeGame: VoidFunction;
+    initializeGame: (difficulty: Difficulty) => void;
     onCellPress: (cell: CellState) => void;
     resetGame: VoidFunction;
     selectNumber: (num: number) => void;
@@ -17,28 +17,39 @@ export interface GameState {
     shouldHighlight: (cell: CellState) => boolean;
     getSelectedNumberCount: (selectedNumber: number) => number;
     isInitialCell: (row: number, column: number) => boolean;
+    setShowNewGame: Dispatch<SetStateAction<boolean>>;
     showWinner: boolean;
+    showNewGame: boolean;
     isEraserEnabled: boolean;
     isLoading: boolean;
     pencilMarksEnabled: boolean;
     selectedNumber: number | null;
+    difficulty: Difficulty;
 }
 
 export const useGameState = (): GameState => {
-    const [solvedGrid, setSolvedGrid] = useState<Cell[][]>([]);
-    const [initialGameBoard, setInitialGameBoard] = useState<CellState[][]>([]);
-    const [gameBoard, setGameBoard] = useState<CellState[][]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    // Modals
+    const [showWinner, setShowWinner] = useState(false);
+    const [showNewGame, setShowNewGame] = useState(false);
+
+    // settings
+    const [currentDifficulty, setCurrentDifficulty] = useState<Difficulty>(Difficulty.Easy);
     const [isEraserEnabled, setEraserEnabled] = useState(false);
     const [pencilMarksEnabled, setPencilMarksEnabled] = useState(false);
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
-    const [showWinner, setShowWinner] = useState(false);
+
+    // game board
+    const [solvedGrid, setSolvedGrid] = useState<Cell[][]>([]);
+    const [initialGameBoard, setInitialGameBoard] = useState<CellState[][]>([]);
+    const [gameBoard, setGameBoard] = useState<CellState[][]>([]);
+
+    const [isLoading, setIsLoading] = useState(true);
 
     const GridUtilities = useGridUtilities();
     const { generateGameBoard } = useGenerateBoard();
 
     useEffect(() => {
-        initializeGame();
+        initializeGame(Difficulty.Easy);
         setIsLoading(false);
     }, []);
 
@@ -48,10 +59,12 @@ export const useGameState = (): GameState => {
         }
     }, [gameBoard]);
 
-    const initializeGame = () => {
+    const initializeGame = (difficulty: Difficulty) => {
         setShowWinner(false);
+        setShowNewGame(false);
+        setCurrentDifficulty(difficulty);
 
-        const gameBoard = generateGameBoard(Difficulty.Extreme);
+        const gameBoard = generateGameBoard(difficulty);
         // Source of truth
         setSolvedGrid(gameBoard.solvedGrid);
         setInitialGameBoard(gameBoard.gameGrid);
@@ -226,7 +239,7 @@ export const useGameState = (): GameState => {
     };
 
     const resetGame = (): void => {
-        const gridCopy = initialGameBoard.map(row => [...row]);
+        const gridCopy = GridUtilities.cloneGrid(initialGameBoard);
         setGameBoard(gridCopy);
     };
 
@@ -264,8 +277,8 @@ export const useGameState = (): GameState => {
     };
 
     return {
-        initializeGame,
         onCellPress,
+        initializeGame,
         resetGame,
         selectNumber,
         toggleEraser,
@@ -276,10 +289,13 @@ export const useGameState = (): GameState => {
         shouldHighlight,
         getSelectedNumberCount,
         isInitialCell: (row: number, column: number) => initialGameBoard[row][column].value > 0,
+        setShowNewGame,
         showWinner,
+        showNewGame,
         isEraserEnabled,
         isLoading,
         pencilMarksEnabled,
         selectedNumber,
+        difficulty: currentDifficulty
     };
 };

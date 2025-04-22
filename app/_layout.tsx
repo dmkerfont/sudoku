@@ -7,7 +7,6 @@ export default function RootLayout() {
                 name="index"
                 options={{
                     headerShown: true,
-                    headerTitle: 'Sudoku Solver!',
                     headerTitleAlign: 'center',
                 }}
             />

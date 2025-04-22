@@ -47,14 +47,12 @@ const styles = StyleSheet.create({
     },
     content: {
         position: 'absolute',
-        width: '20%',
-        aspectRatio: 3 / 2,
         backgroundColor: 'white',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
+        padding: 16,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 4,
+        alignSelf: 'center',
     },
     winningText: {
         fontSize: 24,

@@ -69,7 +69,11 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
         >
             <Icon
                 source={'pencil-outline'}
-                size={cellFontStyles.numberSelectorFont.fontSize || 36}
+                size={
+                    (isSelected
+                        ? cellFontStyles.numberSelectorFont.fontSize
+                        : cellFontStyles.cellFontLarge.fontSize) || 36
+                }
                 color={'#808080'}
             />
         </TouchableOpacity>

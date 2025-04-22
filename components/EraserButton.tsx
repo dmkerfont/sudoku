@@ -32,7 +32,11 @@ export const EraserButton: React.FC<EraserButtonProps> = ({
         >
             <Icon
                 source={'eraser'}
-                size={cellFontStyles.numberSelectorFont.fontSize || 36}
+                size={
+                    (isSelected
+                        ? cellFontStyles.numberSelectorFont.fontSize
+                        : cellFontStyles.cellFontLarge.fontSize) || 36
+                }
                 color={isSelected ? '#FF69B4' : '#808080'}
             />
         </TouchableOpacity>

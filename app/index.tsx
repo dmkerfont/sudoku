@@ -1,11 +1,8 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
     View,
-    Text,
-    TouchableOpacity,
     StyleSheet,
     useWindowDimensions,
-    Modal,
     ActivityIndicator,
 } from 'react-native';
 import { GameBoard } from '@/components/GameBoard';
@@ -14,21 +11,24 @@ import { BoardSizeContextProvider } from '@/hooks/context/BoardSizeContext';
 import { ButtonsContainer } from '@/components/ButtonsContainer';
 import { WinnerModal } from '@/components/WinnerModal';
 import { NewGameModal } from '@/components/NewGameModal';
-import { Difficulty } from '@/hooks/useGenerateBoard';
 import { useNavigation } from 'expo-router';
+import { HamburgerModal } from '@/components/HamburgerModal';
+import { Modals } from '@/types/Modals';
 
 export default function App() {
     const navigation = useNavigation();
 
-    const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
     const gameState = useGameState();
+    const [currentModal, setCurrentModal] = useState<Modals | null>(null);
+
+    useEffect(() => {
+        if (gameState.showWinner && currentModal !== Modals.Winner) {
+            setCurrentModal(Modals.Winner);
+        }
+    }, [gameState.showWinner]);
 
     const { width } = useWindowDimensions();
     const isMobileLayout = width < 768;
-
-    const onNewGameSelected = (difficulty: Difficulty) => {
-        gameState.initializeGame(difficulty);
-    };
 
     useLayoutEffect(() => {
         navigation.setOptions({ title: gameState.difficulty.toString() });
@@ -41,53 +41,6 @@ export default function App() {
             </View>
         );
     }
-
-    const renderBottomSheet = () => (
-        <Modal
-            visible={bottomSheetVisible}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={() => setBottomSheetVisible(false)}
-        >
-            <TouchableOpacity
-                style={styles.modalOverlay}
-                activeOpacity={1}
-                onPress={() => setBottomSheetVisible(false)}
-            >
-                <View style={styles.bottomSheetContainer}>
-                    <TouchableOpacity
-                        style={styles.bottomSheetButton}
-                        onPress={() => {
-                            gameState.validateBoard();
-                            setBottomSheetVisible(false);
-                        }}
-                    >
-                        <Text>Validate</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.bottomSheetButton}
-                        onPress={() => {
-                            gameState.resetGame();
-                            setBottomSheetVisible(false);
-                        }}
-                    >
-                        <Text>Reset</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.bottomSheetButton}
-                        onPress={() => {
-                            setBottomSheetVisible(false);
-                            gameState.setShowNewGame(true);
-                        }}
-                    >
-                        <Text>New Game</Text>
-                    </TouchableOpacity>
-                </View>
-            </TouchableOpacity>
-        </Modal>
-    );
 
     return (
         <BoardSizeContextProvider>
@@ -104,8 +57,6 @@ export default function App() {
                           },
                 ]}
             >
-                {renderBottomSheet()}
-
                 <GameBoard
                     gameState={gameState}
                     isMobileLayout={isMobileLayout}
@@ -116,18 +67,35 @@ export default function App() {
                 <ButtonsContainer
                     gameState={gameState}
                     isMobileLayout={isMobileLayout}
-                    onMenuButtonPressed={() => setBottomSheetVisible(true)}
+                    onMenuButtonPressed={() => setCurrentModal(Modals.Menu)}
                 />
 
                 <WinnerModal
-                    show={gameState.showWinner}
-                    onNewGamePress={() => gameState.setShowNewGame(true)}
+                    isVisible={currentModal === Modals.Winner}
+                    onNewGamePress={() => setCurrentModal(Modals.NewGame)}
                 />
 
                 <NewGameModal
-                    show={gameState.showNewGame}
-                    onNewGameSelected={onNewGameSelected}
-                    onRequestDismiss={() => gameState.setShowNewGame(false)}
+                    isVisible={currentModal === Modals.NewGame}
+                    onNewGameSelected={difficulty => {
+                        setCurrentModal(null);
+                        gameState.initializeGame(difficulty);
+                    }}
+                    onRequestDismiss={() => setCurrentModal(null)}
+                />
+
+                <HamburgerModal
+                    isVisible={currentModal === Modals.Menu}
+                    onNewGame={() => setCurrentModal(Modals.NewGame)}
+                    onResetGame={() => {
+                        gameState.resetGame();
+                        setCurrentModal(null);
+                    }}
+                    onValidateBoard={() => {
+                        gameState.validateBoard();
+                        setCurrentModal(null);
+                    }}
+                    onRequestClose={() => setCurrentModal(null)}
                 />
             </View>
         </BoardSizeContextProvider>
@@ -143,25 +111,5 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.2)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    bottomSheetContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 16,
-        maxWidth: 600,
-        width: '90%',
-    },
-    bottomSheetButton: {
-        padding: 16,
-        marginVertical: 8,
-        backgroundColor: '#eee',
-        borderRadius: 8,
-        alignItems: 'center',
     },
 });

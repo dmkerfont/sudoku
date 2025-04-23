@@ -14,6 +14,7 @@
         "export-web": "npx expo export --platform web",
         "docker:build": "docker build -t sudoku-web-app .",
         "docker:start": "docker run -p 3000:80 sudoku-web-app",
+        "docker:stop": "docker stop sudoku-web-app",
         "maybe docker publish or pull down to run latest img": "echo todo"
     },
     "jest": {

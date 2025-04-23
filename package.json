@@ -16,7 +16,7 @@
         "docker:start": "docker run -p 3000:80 sudoku-web-app",
         "docker:stop": "docker stop sudoku-web-app",
         "changeset": "npx changeset",
-        "release": "npm run build && npx changeset publish"
+        "publish": "npx changeset publish"
     },
     "jest": {
         "preset": "jest-expo"

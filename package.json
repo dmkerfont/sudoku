@@ -15,7 +15,8 @@
         "docker:build": "docker build -t sudoku-web-app .",
         "docker:start": "docker run -p 3000:80 sudoku-web-app",
         "docker:stop": "docker stop sudoku-web-app",
-        "maybe docker publish or pull down to run latest img": "echo todo"
+        "changeset": "npx changeset",
+        "release": "npm run build && npx changeset publish"
     },
     "jest": {
         "preset": "jest-expo"
@@ -49,6 +50,7 @@
     },
     "devDependencies": {
         "@babel/core": "^7.25.2",
+        "@changesets/cli": "^2.29.2",
         "@types/jest": "^29.5.12",
         "@types/react": "~18.3.12",
         "@types/react-test-renderer": "^18.3.0",

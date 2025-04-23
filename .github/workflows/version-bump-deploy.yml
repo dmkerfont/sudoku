@@ -21,14 +21,7 @@ jobs:
             - name: Install dependencies
               run: npm install
 
-            # TODO: see if we need additional config for this to work
-            # also consider --no-ci to see what it does
-            - name: Run semantic-release to bump version
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: npx semantic-release --no-ci
-
-            - name: Get new version from package.json - store as env variable
+            - name: Get version from package.json - store as env variable
               id: version
               run: |
                   VERSION=$(node -p "require('./package.json').version")

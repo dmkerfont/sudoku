@@ -1,5 +1,5 @@
 import { CellState } from '@/types/CellState';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { useGridUtilities } from './useGridUtilities';
 import { Difficulty, useGenerateBoard } from './useGenerateBoard';
@@ -17,9 +17,7 @@ export interface GameState {
     shouldHighlight: (cell: CellState) => boolean;
     getSelectedNumberCount: (selectedNumber: number) => number;
     isInitialCell: (row: number, column: number) => boolean;
-    setShowNewGame: Dispatch<SetStateAction<boolean>>;
     showWinner: boolean;
-    showNewGame: boolean;
     isEraserEnabled: boolean;
     isLoading: boolean;
     pencilMarksEnabled: boolean;
@@ -28,9 +26,6 @@ export interface GameState {
 }
 
 export const useGameState = (): GameState => {
-    // Modals
-    const [showWinner, setShowWinner] = useState(false);
-    const [showNewGame, setShowNewGame] = useState(false);
 
     // settings
     const [currentDifficulty, setCurrentDifficulty] = useState<Difficulty>(Difficulty.Easy);
@@ -44,6 +39,7 @@ export const useGameState = (): GameState => {
     const [gameBoard, setGameBoard] = useState<CellState[][]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
+    const [showWinner, setShowWinner] = useState(false);
 
     const GridUtilities = useGridUtilities();
     const { generateGameBoard } = useGenerateBoard();
@@ -54,14 +50,12 @@ export const useGameState = (): GameState => {
     }, []);
 
     useEffect(() => {
-        if (!isLoading && isPuzzleComplete()) {
-            setShowWinner(true);
+        if (!isLoading) {
+            setShowWinner(isPuzzleComplete(gameBoard, solvedGrid));
         }
-    }, [gameBoard]);
+    }, [isLoading, gameBoard, solvedGrid]);
 
     const initializeGame = (difficulty: Difficulty) => {
-        setShowWinner(false);
-        setShowNewGame(false);
         setCurrentDifficulty(difficulty);
 
         const gameBoard = generateGameBoard(difficulty);
@@ -259,10 +253,10 @@ export const useGameState = (): GameState => {
         );
     };
 
-    const isPuzzleComplete = (): boolean => {
+    const isPuzzleComplete = (board: CellState[][], solution: Cell[][]): boolean => {
         for (let r = 0; r < 9; r++) {
             for (let c = 0; c < 9; c++) {
-                if (gameBoard[r][c].value !== solvedGrid[r][c].value) {
+                if (board[r][c].value !== solution[r][c].value) {
                     return false;
                 }
             }
@@ -289,13 +283,11 @@ export const useGameState = (): GameState => {
         shouldHighlight,
         getSelectedNumberCount,
         isInitialCell: (row: number, column: number) => initialGameBoard[row][column].value > 0,
-        setShowNewGame,
-        showWinner,
-        showNewGame,
         isEraserEnabled,
         isLoading,
         pencilMarksEnabled,
         selectedNumber,
-        difficulty: currentDifficulty
+        difficulty: currentDifficulty,
+        showWinner
     };
 };

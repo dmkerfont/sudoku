@@ -9,23 +9,31 @@ import {
 } from 'react-native';
 
 export interface NewGameModalProps {
-    show: boolean;
+    isVisible: boolean;
     onNewGameSelected: (difficulty: Difficulty) => void;
     onRequestDismiss: VoidFunction;
 }
 
 export const NewGameModal: React.FC<NewGameModalProps> = ({
     onNewGameSelected,
-    show,
+    isVisible,
     onRequestDismiss,
 }) => {
     return (
         <>
             <TouchableOpacity
                 onPress={onRequestDismiss}
-                style={[styles.backdrop, { display: show ? 'flex' : 'none' }]}
+                style={[
+                    styles.backdrop,
+                    { display: isVisible ? 'flex' : 'none' },
+                ]}
             ></TouchableOpacity>
-            <View style={[styles.content, { display: show ? 'flex' : 'none' }]}>
+            <View
+                style={[
+                    styles.content,
+                    { display: isVisible ? 'flex' : 'none' },
+                ]}
+            >
                 <Text style={styles.largeFont}>Select Difficulty</Text>
 
                 <Pressable onPress={() => onNewGameSelected(Difficulty.Easy)}>

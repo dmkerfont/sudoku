@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export interface WinnerModalProps {
-    show: boolean;
+    isVisible: boolean;
     onNewGamePress: VoidFunction;
 }
 
@@ -11,13 +11,13 @@ export const WinnerModal = (props: WinnerModalProps) => {
             <View
                 style={[
                     styles.backdrop,
-                    { display: props.show ? 'flex' : 'none' },
+                    { display: props.isVisible ? 'flex' : 'none' },
                 ]}
             ></View>
             <View
                 style={[
                     styles.content,
-                    { display: props.show ? 'flex' : 'none' },
+                    { display: props.isVisible ? 'flex' : 'none' },
                 ]}
             >
                 <Text style={styles.winningText}>Wow! You Won!</Text>

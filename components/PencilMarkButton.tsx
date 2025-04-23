@@ -1,15 +1,25 @@
+import { useBoardSizeContext } from '@/hooks/context/BoardSizeContext';
 import { useDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+    StyleProp,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ViewStyle,
+} from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export interface PencilMarkButtonProps {
     onPencilMarkToggle: VoidFunction;
     isSelected: boolean;
+    style?: StyleProp<ViewStyle>;
 }
 
 export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
     onPencilMarkToggle,
     isSelected,
+    style,
 }) => {
     const { cellFontStyles } = useDynamicFontSizes();
 
@@ -32,13 +42,18 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
             <TouchableOpacity
                 activeOpacity={1}
                 onPress={onPencilMarkToggle}
-                style={[styles.button, styles.sudokuCell, styles.selected]}
+                style={[
+                    styles.button,
+                    style,
+                    styles.sudokuCell,
+                    styles.selected,
+                ]}
             >
                 {pencilMarks}
                 <View style={{ position: 'absolute' }}>
                     <Icon
                         source={'pencil-outline'}
-                        size={cellFontStyles.cellFontLarge.fontSize || 36}
+                        size={cellFontStyles.numberSelectorFont.fontSize || 36}
                         color={'#F2C464'}
                     />
                 </View>
@@ -50,11 +65,15 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
         <TouchableOpacity
             activeOpacity={1}
             onPress={onPencilMarkToggle}
-            style={[styles.button, styles.sudokuCell]}
+            style={[styles.button, style, styles.sudokuCell]}
         >
             <Icon
                 source={'pencil-outline'}
-                size={cellFontStyles.cellFontLarge.fontSize || 36}
+                size={
+                    (isSelected
+                        ? cellFontStyles.numberSelectorFont.fontSize
+                        : cellFontStyles.cellFontLarge.fontSize) || 36
+                }
                 color={'#808080'}
             />
         </TouchableOpacity>
@@ -69,8 +88,6 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         alignItems: 'center',
         justifyContent: 'center',
-        aspectRatio: 1,
-        height: `${100 / 9}%`,
     },
     selected: {
         backgroundColor: '#99e6ff',

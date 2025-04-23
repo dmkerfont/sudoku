@@ -166,35 +166,36 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
         );
 
         const { min, max } = difficultyMap[difficulty];
-        const numberCellsToRemove =
-            81 - Math.floor(Math.random() * (max - min + 1) + min);
+        const numCellsToRemain = Math.floor(Math.random() * (max - min + 1) + min);
         console.log(
-            `removing ${numberCellsToRemove} cells for ${difficulty} puzzle`
+            `removing ${81 - numCellsToRemain} cells for ${difficulty} puzzle`
         );
-        let removedCount = 0;
 
-        while (removedCount < numberCellsToRemove) {
-            const randomRow = Math.floor(Math.random() * 9);
-            const randomCol = Math.floor(Math.random() * 9);
+        const cellsToTry = gameGrid.flat().filter((item) => item.value > 0);
+        while (cellsToTry.length > numCellsToRemain) {
+            const randomIndex = Math.floor(Math.random() * cellsToTry.length);
+            const randomRow = cellsToTry[randomIndex].row;
+            const randomColumn = cellsToTry[randomIndex].column;
 
-            if (gameGrid[randomRow][randomCol].value != 0) {
+            if (gameGrid[randomRow][randomColumn].value != 0) {
                 // store it in case we must put it back
-                const backup = gameGrid[randomRow][randomCol].value;
-                gameGrid[randomRow][randomCol].value = 0;
+                const backup = gameGrid[randomRow][randomColumn].value;
+                gameGrid[randomRow][randomColumn].value = 0;
 
                 // Check if the puzzle still has a unique solution after removal
                 if (hasUniqueSolution(gameGrid)) {
                     console.log(
                         'has unique solution, value removed successfully'
                     );
-                    removedCount++;
                 } else {
                     console.log(
                         'does not have unique solution, restoring value'
                     );
-                    gameGrid[randomRow][randomCol].value = backup; // Restore the value
+                    gameGrid[randomRow][randomColumn].value = backup; // Restore the value
                 }
             }
+
+            cellsToTry.splice(randomIndex, 1);
         }
 
         return gameGrid;
@@ -206,7 +207,7 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
         solveGrid(grid);
         // GridUtilities.printGrid(grid, cell => cell.value.toString());
 
-        const gameGrid = createGameGrid(grid, Difficulty.Easy);
+        const gameGrid = createGameGrid(grid, difficulty);
         // GridUtilities.printGrid(gameGrid, cell => cell.value.toString());
 
         return {

@@ -1,5 +1,11 @@
 # sudoku
 
+## 1.0.5
+
+### Patch Changes
+
+- 042d510: still fiddling with the ci to create a release
+
 ## 1.0.4
 
 ### Patch Changes

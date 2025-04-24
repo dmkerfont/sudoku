@@ -1,5 +1,11 @@
 # sudoku
 
+## 1.0.4
+
+### Patch Changes
+
+- f7b5b23: update changesets release
+
 ## 1.0.3
 
 ### Patch Changes

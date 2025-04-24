@@ -29,10 +29,11 @@ jobs:
             - name: Build Web App to /dist
               run: npm run export-web
 
-            - name: Create Release Pull Request or GitHub Release
+            - name: Create Release PR or GitHub Release
               uses: changesets/action@v1
               with:
-                  publish: echo "Skipping npm publish"
+                  publish: npm run publish
+                  setupGitUser: true
                   createGithubReleases: true
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,11 @@
 # sudoku
 
+## 1.0.6
+
+### Patch Changes
+
+- 94219d9: updating ci again
+
 ## 1.0.5
 
 ### Patch Changes

@@ -146,10 +146,10 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
         // min/max number of clues to be left on the board
         const difficultyMap: Record<Difficulty, { min: number; max: number }> =
         {
-            Easy: { min: 36, max: 40 },
-            Medium: { min: 30, max: 35 },
-            Hard: { min: 24, max: 29 },
-            Extreme: { min: 17, max: 24 },
+            Easy: { min: 36, max: 49 },
+            Medium: { min: 32, max: 35 },
+            Hard: { min: 28, max: 31 },
+            Extreme: { min: 17, max: 27 },
         };
 
         const clonedGrid = GridUtilities.cloneGrid(grid);
@@ -166,13 +166,12 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
         );
 
         const { min, max } = difficultyMap[difficulty];
-        const numCellsToRemain = Math.floor(Math.random() * (max - min + 1) + min);
         console.log(
-            `removing ${81 - numCellsToRemain} cells for ${difficulty} puzzle`
+            `goal: ${min}-${max} cells remaining for ${difficulty} puzzle`
         );
 
         const cellsToTry = gameGrid.flat().filter((item) => item.value > 0);
-        while (cellsToTry.length > numCellsToRemain) {
+        while (cellsToTry.length > min) {
             const randomIndex = Math.floor(Math.random() * cellsToTry.length);
             const randomRow = cellsToTry[randomIndex].row;
             const randomColumn = cellsToTry[randomIndex].column;
@@ -198,6 +197,11 @@ export const useGenerateBoard = (): UseGenerateBoardObj => {
             cellsToTry.splice(randomIndex, 1);
         }
 
+        const remainingCells = gameGrid.flat().filter((item) => item.value > 0).length;
+        if (remainingCells > max) {
+            console.log(`${remainingCells} remaining, max was ${max}, trying again...`);
+            return createGameGrid(grid, difficulty);
+        }
         return gameGrid;
     };
 

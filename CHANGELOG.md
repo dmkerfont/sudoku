@@ -1,5 +1,11 @@
 # sudoku
 
+## 1.0.3
+
+### Patch Changes
+
+- 84ecad7: Update game generation logic
+
 ## 1.0.2
 
 ### Patch Changes

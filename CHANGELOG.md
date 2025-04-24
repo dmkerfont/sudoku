@@ -1,5 +1,11 @@
 # sudoku
 
+## 1.0.7
+
+### Patch Changes
+
+- 02c4620: fiddling with ci more
+
 ## 1.0.6
 
 ### Patch Changes

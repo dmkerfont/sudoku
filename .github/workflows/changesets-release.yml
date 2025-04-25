@@ -44,7 +44,7 @@ jobs:
                   VERSION=$(node -p "require('./package.json').version")                
                   gh release view "v$VERSION"
 
-                  if [ $? -eq 0 ]; then
+                  if gh release view "v$VERSION" > /dev/null 2>&1; then
                     echo "Release v$VERSION already exists."
                   else
                     echo "Release v$VERSION does not exist. Creating release..."

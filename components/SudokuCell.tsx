@@ -1,5 +1,7 @@
 import { useDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
 import { CellState } from '@/types/CellState';
+import { HightlightColors } from '@/types/HighlightColors';
+import { PenColors } from '@/types/PenColors';
 import {
     StyleSheet,
     Text,
@@ -16,6 +18,8 @@ export interface SudokuCellProps {
     showHighlight: boolean;
     isInitialCell: boolean;
     showError: boolean;
+    highlightColor: HightlightColors;
+    penColor: PenColors;
 }
 
 export const SudokuCell = (props: SudokuCellProps) => {
@@ -23,7 +27,8 @@ export const SudokuCell = (props: SudokuCellProps) => {
     const onPress = () => props.onPress(props.state);
 
     const containerStyle: StyleProp<ViewStyle> = [styles.sudokuCell];
-    props.showHighlight && containerStyle.push(styles.highLight);
+    props.showHighlight &&
+        containerStyle.push({ backgroundColor: props.highlightColor });
     props.showError && containerStyle.push(styles.errorBorder);
 
     const { cellFontStyles } = useDynamicFontSizes();
@@ -35,7 +40,9 @@ export const SudokuCell = (props: SudokuCellProps) => {
                     selectable={false}
                     style={[
                         cellFontStyles.cellFontLarge,
-                        props.isInitialCell ? styles.bold : styles.penMark,
+                        props.isInitialCell
+                            ? styles.bold
+                            : [styles.penMark, { color: props.penColor }],
                     ]}
                 >
                     {value}
@@ -47,12 +54,13 @@ export const SudokuCell = (props: SudokuCellProps) => {
     const pencilMarks = [];
     for (let i = 1; i <= 9; i++) {
         pencilMarks.push(
-            <View style={styles.pencilMarkContainer} key={i}>
+            <View style={[styles.pencilMarkContainer]} key={i}>
                 <Text
                     selectable={false}
                     style={[
                         cellFontStyles.cellPencilMarkFont,
                         styles.pencilMark,
+                        { color: props.penColor },
                     ]}
                 >
                     {props.state.pencilMarks?.includes(i) ? i : undefined}
@@ -90,19 +98,14 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'red',
     },
-    highLight: {
-        backgroundColor: '#B9FCFF',
-    },
     bold: {
         color: '#505050',
         fontWeight: '700',
     },
     penMark: {
         fontWeight: '500',
-        color: '#1C1CF0',
     },
     pencilMark: {
-        color: '#1C1CF0',
         fontWeight: '500',
     },
 });

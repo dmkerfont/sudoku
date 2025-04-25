@@ -58,7 +58,9 @@ export const ButtonsContainer: React.FC<ButtonsContainerProps> = ({
                         margin: buttonMargin,
                     },
                     ,
-                    isSelected ? styles.selected : undefined,
+                    isSelected
+                        ? { backgroundColor: gameState.highlightColor }
+                        : undefined,
                 ]}
                 key={i}
             >
@@ -114,6 +116,7 @@ export const ButtonsContainer: React.FC<ButtonsContainerProps> = ({
                     height: buttonSize,
                     width: buttonSize,
                 }}
+                highlightColor={gameState.highlightColor}
             />
 
             <PencilMarkButton
@@ -124,6 +127,8 @@ export const ButtonsContainer: React.FC<ButtonsContainerProps> = ({
                     height: buttonSize,
                     width: buttonSize,
                 }}
+                highlightColor={gameState.highlightColor}
+                penColor={gameState.penColor}
             />
 
             <HamburgerMenuButton
@@ -167,8 +172,5 @@ const styles = StyleSheet.create({
     },
     selectedText: {
         fontWeight: '600',
-    },
-    selected: {
-        backgroundColor: '#B9FCFF',
     },
 });

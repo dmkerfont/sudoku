@@ -23,6 +23,8 @@ export const SudokuBox = (props: SudokuBoxProps) => {
                         errorCell.column === cell.column
                 )}
                 isInitialCell={gameState.isInitialCell(cell.row, cell.column)}
+                highlightColor={gameState.highlightColor}
+                penColor={gameState.penColor}
             />
         );
     });

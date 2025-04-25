@@ -1,5 +1,6 @@
-import { useBoardSizeContext } from '@/hooks/context/BoardSizeContext';
 import { useDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
+import { HightlightColors } from '@/types/HighlightColors';
+import { PenColors } from '@/types/PenColors';
 import {
     StyleProp,
     StyleSheet,
@@ -13,12 +14,16 @@ import { Icon } from 'react-native-paper';
 export interface PencilMarkButtonProps {
     onPencilMarkToggle: VoidFunction;
     isSelected: boolean;
+    highlightColor: HightlightColors;
+    penColor: PenColors;
     style?: StyleProp<ViewStyle>;
 }
 
 export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
     onPencilMarkToggle,
     isSelected,
+    highlightColor,
+    penColor,
     style,
 }) => {
     const { cellFontStyles } = useDynamicFontSizes();
@@ -29,7 +34,10 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
             <View style={styles.pencilMarkContainer} key={i}>
                 <Text
                     selectable={false}
-                    style={cellFontStyles.cellPencilMarkFont}
+                    style={[
+                        cellFontStyles.cellPencilMarkFont,
+                        { color: penColor },
+                    ]}
                 >
                     {i}
                 </Text>
@@ -46,7 +54,9 @@ export const PencilMarkButton: React.FC<PencilMarkButtonProps> = ({
                     styles.button,
                     style,
                     styles.sudokuCell,
-                    styles.selected,
+                    isSelected
+                        ? { backgroundColor: highlightColor }
+                        : undefined,
                 ]}
             >
                 {pencilMarks}
@@ -88,9 +98,6 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    selected: {
-        backgroundColor: '#B9FCFF',
     },
     sudokuCell: {
         flexDirection: 'row',

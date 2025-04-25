@@ -1,4 +1,5 @@
 import { useDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
+import { HightlightColors } from '@/types/HighlightColors';
 import {
     StyleProp,
     StyleSheet,
@@ -10,12 +11,14 @@ import { Icon } from 'react-native-paper';
 export interface EraserButtonProps {
     onEraserToggle: VoidFunction;
     isSelected: boolean;
+    highlightColor: HightlightColors;
     style?: StyleProp<ViewStyle>;
 }
 
 export const EraserButton: React.FC<EraserButtonProps> = ({
     onEraserToggle,
     isSelected,
+    highlightColor,
     style,
 }) => {
     const { cellFontStyles } = useDynamicFontSizes();
@@ -27,7 +30,7 @@ export const EraserButton: React.FC<EraserButtonProps> = ({
             style={[
                 styles.button,
                 style,
-                isSelected ? styles.selected : undefined,
+                isSelected ? { backgroundColor: highlightColor } : undefined,
             ]}
         >
             <Icon
@@ -51,8 +54,5 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    selected: {
-        backgroundColor: '#B9FCFF',
     },
 });

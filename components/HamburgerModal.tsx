@@ -12,6 +12,7 @@ export interface HamburgerModalProps {
     onValidateBoard: VoidFunction;
     onResetGame: VoidFunction;
     onNewGame: VoidFunction;
+    onShowSettings: VoidFunction;
     onRequestClose: VoidFunction;
 }
 
@@ -20,6 +21,7 @@ export const HamburgerModal: React.FC<HamburgerModalProps> = ({
     onValidateBoard,
     onResetGame,
     onNewGame,
+    onShowSettings,
     onRequestClose,
 }) => {
     return (
@@ -45,6 +47,10 @@ export const HamburgerModal: React.FC<HamburgerModalProps> = ({
 
                     <Pressable onPress={onNewGame}>
                         <Text style={styles.modalButton}>New Game</Text>
+                    </Pressable>
+
+                    <Pressable onPress={onShowSettings}>
+                        <Text style={styles.modalButton}>Settings</Text>
                     </Pressable>
                 </View>
             </TouchableOpacity>

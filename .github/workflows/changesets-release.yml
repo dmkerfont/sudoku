@@ -35,15 +35,13 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Install GitHub CLI and login
+            - name: Login to gh CLI
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  sudo apt-get update
-                  sudo apt-get install -y gh
-                  echo "${GH_TOKEN}" | gh auth login --with-token
+                  gh auth login --with-token
 
-            - name: Create
+            - name: Tag and Release - If no changesets exist
               if: steps.changesets.outputs.hasChangesets == 'false'
               # at this point, theres no changesets, so create a release if it doesn't already exist
               env:

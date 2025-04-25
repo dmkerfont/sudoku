@@ -14,6 +14,9 @@ import { NewGameModal } from '@/components/NewGameModal';
 import { useNavigation } from 'expo-router';
 import { HamburgerModal } from '@/components/HamburgerModal';
 import { Modals } from '@/types/Modals';
+import { SettingsModal } from '@/components/SettingsModal';
+import { HightlightColors } from '@/types/HighlightColors';
+import { PenColors } from '@/types/PenColors';
 
 export default function App() {
     const navigation = useNavigation();
@@ -91,6 +94,15 @@ export default function App() {
                     onRequestClose={() => setCurrentModal(null)}
                 />
 
+                <SettingsModal
+                    isVisible={currentModal === Modals.Settings}
+                    penColor={gameState.penColor}
+                    highlightColor={gameState.highlightColor}
+                    setPenColor={gameState.setPenColor}
+                    setHighlightColor={gameState.setHighlightColor}
+                    onRequestClose={() => setCurrentModal(null)}
+                />
+
                 <HamburgerModal
                     isVisible={currentModal === Modals.Menu}
                     onNewGame={() => setCurrentModal(Modals.NewGame)}
@@ -102,6 +114,7 @@ export default function App() {
                         gameState.validateBoard();
                         setCurrentModal(null);
                     }}
+                    onShowSettings={() => setCurrentModal(Modals.Settings)}
                     onRequestClose={() => setCurrentModal(null)}
                 />
             </View>

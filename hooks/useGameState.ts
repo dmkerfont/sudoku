@@ -1,9 +1,11 @@
 import { CellState } from '@/types/CellState';
 import { useEffect, useState } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Alert, Platform, ViewStyle } from 'react-native';
 import { useGridUtilities } from './useGridUtilities';
 import { Difficulty, useGenerateBoard } from './useGenerateBoard';
 import { Cell } from '@/types/Cell';
+import { PenColors } from '@/types/PenColors';
+import { HightlightColors } from '@/types/HighlightColors';
 
 export interface GameState {
     initializeGame: (difficulty: Difficulty) => void;
@@ -17,6 +19,8 @@ export interface GameState {
     shouldHighlight: (cell: CellState) => boolean;
     getSelectedNumberCount: (selectedNumber: number) => number;
     isInitialCell: (row: number, column: number) => boolean;
+    setPenColor: (color: PenColors) => void;
+    setHighlightColor: (color: HightlightColors) => void;
     showWinner: boolean;
     isEraserEnabled: boolean;
     isLoading: boolean;
@@ -24,6 +28,8 @@ export interface GameState {
     selectedNumber: number | null;
     difficulty: Difficulty;
     errorCells: Cell[];
+    penColor: PenColors;
+    highlightColor: HightlightColors;
 }
 
 export const useGameState = (): GameState => {
@@ -32,6 +38,8 @@ export const useGameState = (): GameState => {
     const [isEraserEnabled, setEraserEnabled] = useState(false);
     const [pencilMarksEnabled, setPencilMarksEnabled] = useState(false);
     const [selectedNumber, setSelectedNumber] = useState<number | null>(1);
+    const [penColor, setPenColor] = useState<PenColors>(PenColors.blue);
+    const [highlightColor, setHighlightColor] = useState<HightlightColors>(HightlightColors.skyBlue);
 
     // game board
     const [solvedGrid, setSolvedGrid] = useState<Cell[][]>([]);
@@ -284,6 +292,10 @@ export const useGameState = (): GameState => {
         shouldHighlight,
         getSelectedNumberCount,
         isInitialCell: (row: number, column: number) => initialGameBoard[row][column].value > 0,
+        setPenColor,
+        setHighlightColor,
+        penColor,
+        highlightColor,
         errorCells: [...errorCells, ...conflictingCells],
         isEraserEnabled,
         isLoading,

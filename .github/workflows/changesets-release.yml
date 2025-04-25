@@ -35,16 +35,26 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Tag and Create Release
-              if: steps.changesets.outputs.hasChangesets == 'false'
-              # You can do something when a publish should happen.
+            - name: Install GitHub CLI and login
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  VERSION=$(node -p "require('./package.json').version")
-                  git tag "v$VERSION"
-                  git push origin "v$VERSION"
-                  curl -X POST \
-                    -H "Authorization: token ${{ secrets.GH_PAT }}" \
-                    -d '{"tag_name": "v'$VERSION'", "name": "Release v'$VERSION'", "body": "Release version v'$VERSION'", "draft": false, "prerelease": false}' \
-                    https://api.github.com/repos/${{ github.repository }}/releases
+                  sudo apt-get update
+                  sudo apt-get install -y gh
+                  echo "${GH_TOKEN}" | gh auth login --with-token
+
+            - name: Create
+              if: steps.changesets.outputs.hasChangesets == 'false'
+              # at this point, theres no changesets, so create a release if it doesn't already exist
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  VERSION=$(node -p "require('./package.json').version")                
+                  gh release view "v$VERSION"
+
+                  if [ $? -eq 0 ]; then
+                    echo "Release v$VERSION already exists."
+                  else
+                    echo "Release v$VERSION does not exist. Creating release..."
+                    gh release create v$VERSION --title "v$VERSION" --notes "Automated release of v$VERSION"
+                  fi

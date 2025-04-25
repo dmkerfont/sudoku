@@ -39,8 +39,9 @@ jobs:
               if: steps.changesets.outputs.hasChangesets == 'false'
               # at this point, theres no changesets, so create a release if it doesn't already exist
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  # setting +e before gh release view because I dont want exit on error
+                  # using personal access token as GITHUB_TOKEN does not trigger workflows :(
+                  GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+              # setting +e before gh release view because I dont want exit on error
               run: |
                   set +e
 

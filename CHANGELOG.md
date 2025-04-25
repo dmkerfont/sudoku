@@ -1,5 +1,11 @@
 # sudoku
 
+## 1.0.8
+
+### Patch Changes
+
+- c631237: misc changes
+
 ## 1.0.7
 
 ### Patch Changes

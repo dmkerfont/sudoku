@@ -1,5 +1,11 @@
 # sudoku
 
+## 1.1.0
+
+### Minor Changes
+
+- 5711196: Add color settings to menu for highlight and pen color
+
 ## 1.0.8
 
 ### Patch Changes

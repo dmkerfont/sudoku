@@ -35,13 +35,7 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Login to gh CLI
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  gh auth login --with-token
-
-            - name: Tag and Release - If no changesets exist
+            - name: Tag and Release via gh cli - If no changesets exist
               if: steps.changesets.outputs.hasChangesets == 'false'
               # at this point, theres no changesets, so create a release if it doesn't already exist
               env:

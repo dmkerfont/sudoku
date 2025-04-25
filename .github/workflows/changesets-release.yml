@@ -40,11 +40,17 @@ jobs:
               # at this point, theres no changesets, so create a release if it doesn't already exist
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  # setting +e before gh release view because I dont want exit on error
               run: |
+                  set +e
+
                   VERSION=$(node -p "require('./package.json').version")                
                   gh release view "v$VERSION"
+                  STATUS=$?
 
-                  if gh release view "v$VERSION" > /dev/null 2>&1; then
+                  set -e
+
+                  if [ $STATUS -eq 0 ]; then
                     echo "Release v$VERSION already exists."
                   else
                     echo "Release v$VERSION does not exist. Creating release..."

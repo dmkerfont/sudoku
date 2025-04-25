@@ -1,6 +1,7 @@
 import { Difficulty } from '@/hooks/useGenerateBoard';
 import React from 'react';
 import {
+    Modal,
     Pressable,
     StyleSheet,
     Text,
@@ -11,88 +12,90 @@ import {
 export interface NewGameModalProps {
     isVisible: boolean;
     onNewGameSelected: (difficulty: Difficulty) => void;
-    onRequestDismiss: VoidFunction;
+    onRequestClose: VoidFunction;
 }
 
 export const NewGameModal: React.FC<NewGameModalProps> = ({
     onNewGameSelected,
     isVisible,
-    onRequestDismiss,
+    onRequestClose,
 }) => {
     return (
-        <>
+        <Modal
+            visible={isVisible}
+            transparent={isVisible}
+            animationType="fade"
+            onRequestClose={onRequestClose}
+        >
             <TouchableOpacity
-                onPress={onRequestDismiss}
-                style={[
-                    styles.backdrop,
-                    { display: isVisible ? 'flex' : 'none' },
-                ]}
-            ></TouchableOpacity>
-            <View
-                style={[
-                    styles.content,
-                    { display: isVisible ? 'flex' : 'none' },
-                ]}
+                style={styles.modalOverlay}
+                activeOpacity={1}
+                onPress={onRequestClose}
             >
-                <Text style={styles.largeFont}>Select Difficulty</Text>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.modalTitle}>Select Difficulty</Text>
+                    <Pressable
+                        onPress={() => onNewGameSelected(Difficulty.Easy)}
+                    >
+                        <Text
+                            selectable={false}
+                            style={styles.difficultyButton}
+                        >
+                            Easy
+                        </Text>
+                    </Pressable>
 
-                <Pressable onPress={() => onNewGameSelected(Difficulty.Easy)}>
-                    <Text selectable={false} style={styles.difficultyButton}>
-                        Easy
-                    </Text>
-                </Pressable>
+                    <Pressable
+                        onPress={() => onNewGameSelected(Difficulty.Medium)}
+                    >
+                        <Text
+                            selectable={false}
+                            style={styles.difficultyButton}
+                        >
+                            Medium
+                        </Text>
+                    </Pressable>
 
-                <Pressable onPress={() => onNewGameSelected(Difficulty.Medium)}>
-                    <Text selectable={false} style={styles.difficultyButton}>
-                        Medium
-                    </Text>
-                </Pressable>
+                    <Pressable
+                        onPress={() => onNewGameSelected(Difficulty.Hard)}
+                    >
+                        <Text
+                            selectable={false}
+                            style={styles.difficultyButton}
+                        >
+                            Hard
+                        </Text>
+                    </Pressable>
 
-                <Pressable onPress={() => onNewGameSelected(Difficulty.Hard)}>
-                    <Text selectable={false} style={styles.difficultyButton}>
-                        Hard
-                    </Text>
-                </Pressable>
-
-                <Pressable
-                    onPress={() => onNewGameSelected(Difficulty.Extreme)}
-                >
-                    <Text selectable={false} style={styles.difficultyButton}>
-                        Extreme
-                    </Text>
-                </Pressable>
-            </View>
-        </>
+                    <Pressable
+                        onPress={() => onNewGameSelected(Difficulty.Extreme)}
+                    >
+                        <Text
+                            selectable={false}
+                            style={styles.difficultyButton}
+                        >
+                            Extreme
+                        </Text>
+                    </Pressable>
+                </View>
+            </TouchableOpacity>
+        </Modal>
     );
 };
 
 const styles = StyleSheet.create({
-    backdrop: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'black',
-        opacity: 0.75,
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: 'center',
     },
-    content: {
-        position: 'absolute',
+    modalContainer: {
         backgroundColor: 'white',
-        alignItems: 'stretch',
-        justifyContent: 'center',
-        borderRadius: 4,
-        alignSelf: 'center',
-        padding: 16,
-    },
-    largeFont: {
-        fontSize: 24,
-        paddingBottom: 16,
-        fontWeight: 'semibold',
-    },
-    mediumFont: {
-        fontSize: 16,
-        paddingBottom: 24,
+        padding: 20,
+        borderRadius: 16,
+        maxWidth: 600,
+        width: '90%',
     },
     difficultyButton: {
         fontSize: 16,
@@ -102,8 +105,13 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         marginHorizontal: 8,
-        flex: 1,
         textAlign: 'center',
         marginVertical: 4,
+    },
+    modalTitle: {
+        fontSize: 24,
+        paddingBottom: 16,
+        fontWeight: 'semibold',
+        alignSelf: 'center',
     },
 });

@@ -1,0 +1,5 @@
+---
+'sudoku': patch
+---
+
+misc changes

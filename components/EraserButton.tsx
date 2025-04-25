@@ -53,6 +53,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     selected: {
-        backgroundColor: '#99e6ff',
+        backgroundColor: '#B9FCFF',
     },
 });

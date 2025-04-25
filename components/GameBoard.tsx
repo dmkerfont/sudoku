@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
 
         backgroundColor: 'white',
-        borderColor: 'gray',
+        borderColor: '#505050',
         borderRadius: 4,
     },
     mainViewContainer: {

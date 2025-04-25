@@ -47,19 +47,19 @@ export const ButtonsContainer: React.FC<ButtonsContainerProps> = ({
         const totalCount = gameState.getSelectedNumberCount(i);
         const isSelected = gameState.selectedNumber === i;
 
-        const buttonStyles: StyleProp<ViewStyle> = [
-            styles.numberButton,
-            totalCount === 9 ? styles.disabled : undefined,
-            {
-                width: buttonSize,
-                margin: buttonMargin,
-            },
-        ];
-
         numberButtons.push(
             <Pressable
                 onPress={() => gameState.selectNumber(i)}
-                style={buttonStyles}
+                style={[
+                    styles.numberButton,
+                    totalCount === 9 ? styles.disabled : undefined,
+                    {
+                        width: buttonSize,
+                        margin: buttonMargin,
+                    },
+                    ,
+                    isSelected ? styles.selected : undefined,
+                ]}
                 key={i}
             >
                 <Text
@@ -169,6 +169,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     selected: {
-        backgroundColor: '#99e6ff',
+        backgroundColor: '#B9FCFF',
     },
 });

@@ -14,16 +14,17 @@ export interface SudokuCellProps {
     state: CellState;
     onPress: (cell: CellState) => void;
     showHighlight: boolean;
-    isBold: boolean;
+    isInitialCell: boolean;
+    showError: boolean;
 }
 
 export const SudokuCell = (props: SudokuCellProps) => {
-    const { value, showError } = props.state;
+    const { value } = props.state;
     const onPress = () => props.onPress(props.state);
 
     const containerStyle: StyleProp<ViewStyle> = [styles.sudokuCell];
     props.showHighlight && containerStyle.push(styles.highLight);
-    showError && containerStyle.push(styles.errorBorder);
+    props.showError && containerStyle.push(styles.errorBorder);
 
     const { cellFontStyles } = useDynamicFontSizes();
 
@@ -34,7 +35,7 @@ export const SudokuCell = (props: SudokuCellProps) => {
                     selectable={false}
                     style={[
                         cellFontStyles.cellFontLarge,
-                        props.isBold ? styles.bold : undefined,
+                        props.isInitialCell ? styles.bold : styles.penMark,
                     ]}
                 >
                     {value}
@@ -49,7 +50,10 @@ export const SudokuCell = (props: SudokuCellProps) => {
             <View style={styles.pencilMarkContainer} key={i}>
                 <Text
                     selectable={false}
-                    style={cellFontStyles.cellPencilMarkFont}
+                    style={[
+                        cellFontStyles.cellPencilMarkFont,
+                        styles.pencilMark,
+                    ]}
                 >
                     {props.state.pencilMarks?.includes(i) ? i : undefined}
                 </Text>
@@ -69,7 +73,7 @@ const styles = StyleSheet.create({
         flexBasis: '33.33%', // Ensures each block takes up 1/3 of the row
         height: '33.33%', // Makes the blocks square by setting their height to 1/3 of the container
         borderWidth: 1,
-        borderColor: 'gray',
+        borderColor: '#505050',
         boxSizing: 'border-box', // Ensure padding/border are included in the width/height
         alignItems: 'center',
         justifyContent: 'center',
@@ -87,9 +91,18 @@ const styles = StyleSheet.create({
         borderColor: 'red',
     },
     highLight: {
-        backgroundColor: '#99e6ff',
+        backgroundColor: '#B9FCFF',
     },
     bold: {
-        fontWeight: '600',
+        color: '#505050',
+        fontWeight: '700',
+    },
+    penMark: {
+        fontWeight: '500',
+        color: '#1C1CF0',
+    },
+    pencilMark: {
+        color: '#1C1CF0',
+        fontWeight: '500',
     },
 });

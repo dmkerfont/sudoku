@@ -1,4 +1,11 @@
-import { Modal, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import {
+    Modal,
+    TouchableOpacity,
+    Text,
+    View,
+    StyleSheet,
+    Pressable,
+} from 'react-native';
 
 export interface HamburgerModalProps {
     isVisible: boolean;
@@ -27,33 +34,18 @@ export const HamburgerModal: React.FC<HamburgerModalProps> = ({
                 activeOpacity={1}
                 onPress={onRequestClose}
             >
-                <View style={styles.bottomSheetContainer}>
-                    <TouchableOpacity
-                        style={styles.bottomSheetButton}
-                        onPress={() => {
-                            onValidateBoard();
-                        }}
-                    >
-                        <Text>Validate</Text>
-                    </TouchableOpacity>
+                <View style={styles.modalContainer}>
+                    <Pressable onPress={onValidateBoard}>
+                        <Text style={styles.modalButton}>Validate</Text>
+                    </Pressable>
 
-                    <TouchableOpacity
-                        style={styles.bottomSheetButton}
-                        onPress={() => {
-                            onResetGame();
-                        }}
-                    >
-                        <Text>Reset</Text>
-                    </TouchableOpacity>
+                    <Pressable onPress={onResetGame}>
+                        <Text style={styles.modalButton}>Reset</Text>
+                    </Pressable>
 
-                    <TouchableOpacity
-                        style={styles.bottomSheetButton}
-                        onPress={() => {
-                            onNewGame();
-                        }}
-                    >
-                        <Text>New Game</Text>
-                    </TouchableOpacity>
+                    <Pressable onPress={onNewGame}>
+                        <Text style={styles.modalButton}>New Game</Text>
+                    </Pressable>
                 </View>
             </TouchableOpacity>
         </Modal>
@@ -67,18 +59,22 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    bottomSheetContainer: {
+    modalContainer: {
         backgroundColor: 'white',
         padding: 20,
         borderRadius: 16,
         maxWidth: 600,
         width: '90%',
     },
-    bottomSheetButton: {
-        padding: 16,
-        marginVertical: 8,
-        backgroundColor: '#eee',
-        borderRadius: 8,
-        alignItems: 'center',
+    modalButton: {
+        fontSize: 16,
+        borderWidth: 1,
+        borderRadius: 4,
+        backgroundColor: 'white',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        marginHorizontal: 8,
+        textAlign: 'center',
+        marginVertical: 4,
     },
 });

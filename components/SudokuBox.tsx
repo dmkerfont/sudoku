@@ -17,7 +17,12 @@ export const SudokuBox = (props: SudokuBoxProps) => {
                 state={cell}
                 key={index}
                 showHighlight={gameState.shouldHighlight(cell)}
-                isBold={gameState.isInitialCell(cell.row, cell.column)}
+                showError={gameState.errorCells.some(
+                    errorCell =>
+                        errorCell.row === cell.row &&
+                        errorCell.column === cell.column
+                )}
+                isInitialCell={gameState.isInitialCell(cell.row, cell.column)}
             />
         );
     });
@@ -33,6 +38,7 @@ const styles = StyleSheet.create({
         flexBasis: '33.33%', // Ensures each block takes up 1/3 of the row
         height: '33.33%', // Makes the blocks square by setting their height to 1/3 of the container
         borderWidth: 1,
+        borderColor: '#505050',
         boxSizing: 'border-box', // Ensure padding/border are included in the width/height
     },
 });

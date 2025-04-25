@@ -43,7 +43,7 @@ jobs:
                   git tag "v$VERSION"
                   git push origin "v$VERSION"
                   curl -X POST \
-                    -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                    -H "Authorization: token ${{ secrets.GH_PAT }}" \
                     -d '{"tag_name": "v'$VERSION'", "name": "Release v'$VERSION'", "body": "Release version v'$VERSION'", "draft": false, "prerelease": false}' \
                     https://api.github.com/repos/${{ github.repository }}/releases
               env:

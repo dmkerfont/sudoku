@@ -34,6 +34,12 @@ export default function App() {
         navigation.setOptions({ title: gameState.difficulty.toString() });
     }, [navigation, gameState.difficulty]);
 
+    useEffect(() => {
+        if (!gameState.isLoading) {
+            setCurrentModal(Modals.NewGame);
+        }
+    }, [gameState.isLoading]);
+
     if (gameState.isLoading) {
         return (
             <View style={styles.loadingContainer}>
@@ -73,6 +79,7 @@ export default function App() {
                 <WinnerModal
                     isVisible={currentModal === Modals.Winner}
                     onNewGamePress={() => setCurrentModal(Modals.NewGame)}
+                    onRequestClose={() => setCurrentModal(null)}
                 />
 
                 <NewGameModal
@@ -81,7 +88,7 @@ export default function App() {
                         setCurrentModal(null);
                         gameState.initializeGame(difficulty);
                     }}
-                    onRequestDismiss={() => setCurrentModal(null)}
+                    onRequestClose={() => setCurrentModal(null)}
                 />
 
                 <HamburgerModal

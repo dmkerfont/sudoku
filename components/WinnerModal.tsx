@@ -1,69 +1,67 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+    Modal,
+    Pressable,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 
 export interface WinnerModalProps {
     isVisible: boolean;
     onNewGamePress: VoidFunction;
+    onRequestClose: VoidFunction;
 }
 
-export const WinnerModal = (props: WinnerModalProps) => {
+export const WinnerModal: React.FC<WinnerModalProps> = ({
+    isVisible,
+    onNewGamePress,
+    onRequestClose,
+}) => {
     return (
-        <>
-            <View
-                style={[
-                    styles.backdrop,
-                    { display: props.isVisible ? 'flex' : 'none' },
-                ]}
-            ></View>
-            <View
-                style={[
-                    styles.content,
-                    { display: props.isVisible ? 'flex' : 'none' },
-                ]}
+        <Modal
+            visible={isVisible}
+            transparent={isVisible}
+            animationType="fade"
+            onRequestClose={onRequestClose}
+        >
+            <TouchableOpacity
+                style={styles.modalOverlay}
+                activeOpacity={1}
+                onPress={onRequestClose}
             >
-                <Text style={styles.winningText}>Wow! You Won!</Text>
-                <Text style={styles.provokeText}>
-                    Bet you can't do it again.
-                </Text>
-
-                <Pressable onPress={props.onNewGamePress}>
-                    <Text selectable={false} style={styles.newGameButton}>
-                        Do It Again
+                <View style={styles.modalContainer}>
+                    <Text style={styles.winningText}>Wow! You Won!</Text>
+                    <Text style={styles.provokeText}>
+                        Bet you can't do it again.
                     </Text>
-                </Pressable>
-            </View>
-        </>
+
+                    <Pressable onPress={onNewGamePress}>
+                        <Text selectable={false} style={styles.modalButton}>
+                            Do It Again
+                        </Text>
+                    </Pressable>
+                </View>
+            </TouchableOpacity>
+        </Modal>
     );
 };
 
 const styles = StyleSheet.create({
-    backdrop: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'black',
-        opacity: 0.75,
-        alignItems: 'center',
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.2)',
         justifyContent: 'center',
+        alignItems: 'center',
     },
-    content: {
-        position: 'absolute',
+    modalContainer: {
         backgroundColor: 'white',
-        padding: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 4,
-        alignSelf: 'center',
+        padding: 20,
+        borderRadius: 16,
+        maxWidth: 600,
+        width: '90%',
     },
-    winningText: {
-        fontSize: 24,
-        paddingBottom: 16,
-        fontWeight: 'semibold',
-    },
-    provokeText: {
-        fontSize: 16,
-        paddingBottom: 24,
-    },
-    newGameButton: {
+    modalButton: {
         fontSize: 16,
         borderWidth: 1,
         borderRadius: 4,
@@ -71,7 +69,18 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         marginHorizontal: 8,
-        flex: 1,
         textAlign: 'center',
+        marginVertical: 4,
+    },
+    winningText: {
+        fontSize: 24,
+        paddingBottom: 8,
+        fontWeight: 'semibold',
+        textAlign: 'center',
+    },
+    provokeText: {
+        textAlign: 'center',
+        fontSize: 16,
+        paddingBottom: 16,
     },
 });

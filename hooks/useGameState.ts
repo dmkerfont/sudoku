@@ -23,10 +23,10 @@ export interface GameState {
     pencilMarksEnabled: boolean;
     selectedNumber: number | null;
     difficulty: Difficulty;
+    errorCells: Cell[];
 }
 
 export const useGameState = (): GameState => {
-
     // settings
     const [currentDifficulty, setCurrentDifficulty] = useState<Difficulty>(Difficulty.Easy);
     const [isEraserEnabled, setEraserEnabled] = useState(false);
@@ -37,6 +37,11 @@ export const useGameState = (): GameState => {
     const [solvedGrid, setSolvedGrid] = useState<Cell[][]>([]);
     const [initialGameBoard, setInitialGameBoard] = useState<CellState[][]>([]);
     const [gameBoard, setGameBoard] = useState<CellState[][]>([]);
+
+    // shows invalid cells - until corrected
+    const [errorCells, setErrorCells] = useState<Cell[]>([]);
+    // for highlighting conflicts upon entry, not necessarily invalid, these errors will be short-lived till next cell press
+    const [conflictingCells, setConflictingCells] = useState<Cell[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [showWinner, setShowWinner] = useState(false);
@@ -57,6 +62,8 @@ export const useGameState = (): GameState => {
 
     const initializeGame = (difficulty: Difficulty) => {
         setCurrentDifficulty(difficulty);
+        setErrorCells([]);
+        setConflictingCells([]);
 
         const gameBoard = generateGameBoard(difficulty);
         // Source of truth
@@ -67,47 +74,40 @@ export const useGameState = (): GameState => {
     };
 
     const validateBoard = () => {
-        clearErrors();
-        let hasErrors = false;
-
-        const boardCopy = GridUtilities.cloneGrid(gameBoard);
+        setConflictingCells([]);
+        const errors: Cell[] = [];
 
         for (let r = 0; r < 9; r++) {
             for (let c = 0; c < 9; c++) {
                 // if not matching the actual value and not 0
                 if (
-                    boardCopy[r][c].value !== solvedGrid[r][c].value &&
-                    boardCopy[r][c].value !== 0
+                    gameBoard[r][c].value !== solvedGrid[r][c].value &&
+                    gameBoard[r][c].value !== 0
                 ) {
-                    boardCopy[r][c].showError = true;
-                    hasErrors = true;
+                    errors.push({
+                        box: gameBoard[r][c].box,
+                        column: gameBoard[r][c].column,
+                        row: gameBoard[r][c].row,
+                        value: gameBoard[r][c].value
+                    });
                 }
             }
         }
-        setGameBoard(boardCopy);
+
+        setErrorCells(errors);
 
         Platform.select({
             web: () => {
                 window.alert(
-                    hasErrors ? 'Board contains errors!' : 'Board is valid!'
+                    errors.length > 0 ? 'Board contains errors!' : 'Board is valid!'
                 );
             },
             default: () => {
                 Alert.alert(
-                    hasErrors ? 'Board contains errors!' : 'Board is valid!'
+                    errors.length > 0 ? 'Board contains errors!' : 'Board is valid!'
                 );
             },
         })();
-    };
-
-    const clearErrors = () => {
-        setGameBoard(board => {
-            const newBoard = board.map(row => {
-                const newRow = row.map(item => ({ ...item, showError: false }));
-                return newRow;
-            });
-            return newBoard;
-        });
     };
 
     const updateCell = (state: CellState) => {
@@ -122,7 +122,7 @@ export const useGameState = (): GameState => {
     };
 
     const onCellPress = (cell: CellState): void => {
-        clearErrors();
+        setConflictingCells([]);
 
         // don't modify these cells
         const isInitialCell = initialGameBoard[cell.row][cell.column].value > 0;
@@ -134,10 +134,15 @@ export const useGameState = (): GameState => {
             const update: CellState = {
                 ...cell,
                 pencilMarks: [],
-                showError: false,
                 value: 0,
             };
             updateCell(update);
+
+            // remove this erased cell from errors list
+            setErrorCells((cells) => cells.filter(c => {
+                const erasedCell = gameBoard[cell.row][cell.column];
+                return erasedCell.row != c.row || erasedCell.column != c.column;
+            }))
             return;
         } else if (pencilMarksEnabled && selectedNumber) {
             let pencilMarks = gameBoard[cell.row][cell.column].pencilMarks;
@@ -162,11 +167,7 @@ export const useGameState = (): GameState => {
             // check row for errors
             const rowCells = GridUtilities.getRowCells(gameBoard, cell.row);
             const rowMatch = rowCells.find(c => c.value === selectedNumber);
-            rowMatch &&
-                updateCell({
-                    ...rowMatch,
-                    showError: true,
-                });
+            rowMatch && setConflictingCells(conflicts => [...conflicts, { ...rowMatch }]);
 
             // check column for errors
             const columnCells = GridUtilities.getColumnCells(
@@ -176,20 +177,12 @@ export const useGameState = (): GameState => {
             const columnMatch = columnCells.find(
                 c => c.value === selectedNumber
             );
-            columnMatch &&
-                updateCell({
-                    ...columnMatch,
-                    showError: true,
-                });
+            columnMatch && setConflictingCells(conflicts => [...conflicts, { ...columnMatch }]);
 
             // check box for errors
             const boxCells = GridUtilities.getBoxCells(gameBoard, cell.box);
             const boxMatch = boxCells.find(c => c.value === selectedNumber);
-            boxMatch &&
-                updateCell({
-                    ...boxMatch,
-                    showError: true,
-                });
+            boxMatch && setConflictingCells(conflicts => [...conflicts, { ...boxMatch }]);
 
             // no errors
             if (!rowMatch && !columnMatch && !boxMatch) {
@@ -201,6 +194,12 @@ export const useGameState = (): GameState => {
                 };
                 updateCell(update);
                 setGameBoard(board => removeAffectedPencilMarks(update, board));
+
+                // remove this good cell from errors list
+                setErrorCells((cells) => cells.filter(c => {
+                    const goodCell = gameBoard[cell.row][cell.column];
+                    return goodCell.row != c.row || goodCell.column != c.column;
+                }))
             }
         }
     };
@@ -234,6 +233,8 @@ export const useGameState = (): GameState => {
 
     const resetGame = (): void => {
         const gridCopy = GridUtilities.cloneGrid(initialGameBoard);
+        setErrorCells([]);
+        setConflictingCells([]);
         setGameBoard(gridCopy);
     };
 
@@ -283,6 +284,7 @@ export const useGameState = (): GameState => {
         shouldHighlight,
         getSelectedNumberCount,
         isInitialCell: (row: number, column: number) => initialGameBoard[row][column].value > 0,
+        errorCells: [...errorCells, ...conflictingCells],
         isEraserEnabled,
         isLoading,
         pencilMarksEnabled,

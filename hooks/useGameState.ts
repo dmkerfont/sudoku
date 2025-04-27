@@ -1,6 +1,6 @@
 import { CellState } from '@/types/CellState';
 import { useEffect, useState } from 'react';
-import { Alert, Platform, ViewStyle } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { useGridUtilities } from './useGridUtilities';
 import { Difficulty, useGenerateBoard } from './useGenerateBoard';
 import { Cell } from '@/types/Cell';

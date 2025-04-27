@@ -1,5 +1,4 @@
 import { useDynamicFontSizes } from '@/hooks/useDynamicFontSizes';
-import { Difficulty } from '@/hooks/useGenerateBoard';
 import { HightlightColors } from '@/types/HighlightColors';
 import { PenColors } from '@/types/PenColors';
 import React from 'react';
@@ -47,78 +46,82 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <View style={styles.modalContainer}>
                     <Text style={styles.modalTitle}>Settings</Text>
 
-                    <View style={styles.row}>
-                        <Text>Pen Color</Text>
+                    <View style={[styles.column, { marginBottom: 16 }]}>
+                        <Text style={styles.labelText}>Pen Color</Text>
 
-                        {Object.entries(PenColors).map(([key, value]) => (
-                            <Pressable
-                                key={key}
-                                onPress={() => setPenColor(value)}
-                            >
-                                <View
-                                    style={[
-                                        styles.button,
-                                        {
-                                            backgroundColor: highlightColor,
-                                            width: cellSize,
-                                            height: cellSize,
-                                            borderWidth:
-                                                value === penColor ? 1 : 0,
-                                        },
-                                    ]}
+                        <View style={styles.row}>
+                            {Object.entries(PenColors).map(([key, value]) => (
+                                <Pressable
+                                    key={key}
+                                    onPress={() => setPenColor(value)}
                                 >
-                                    <Text
+                                    <View
                                         style={[
-                                            styles.colorText,
-                                            cellFontStyles.cellFontLarge,
+                                            styles.button,
                                             {
-                                                color: value,
+                                                backgroundColor: highlightColor,
+                                                width: cellSize,
+                                                height: cellSize,
+                                                borderWidth:
+                                                    value === penColor ? 1 : 0,
                                             },
                                         ]}
                                     >
-                                        1
-                                    </Text>
-                                </View>
-                            </Pressable>
-                        ))}
+                                        <Text
+                                            style={[
+                                                styles.colorText,
+                                                cellFontStyles.cellFontLarge,
+                                                {
+                                                    color: value,
+                                                },
+                                            ]}
+                                        >
+                                            1
+                                        </Text>
+                                    </View>
+                                </Pressable>
+                            ))}
+                        </View>
                     </View>
 
-                    <View style={styles.row}>
-                        <Text>Highlight Color</Text>
+                    <View style={styles.column}>
+                        <Text style={styles.labelText}>Highlight Color</Text>
 
-                        {Object.values(HightlightColors).map(value => (
-                            <Pressable
-                                key={value}
-                                onPress={() => setHighlightColor(value)}
-                            >
-                                <View
-                                    style={[
-                                        styles.button,
-                                        {
-                                            backgroundColor: value,
-                                            width: cellSize,
-                                            height: cellSize,
-                                            borderWidth:
-                                                value === highlightColor
-                                                    ? 1
-                                                    : 0,
-                                        },
-                                    ]}
+                        <View style={styles.row}>
+                            {Object.values(HightlightColors).map(value => (
+                                <Pressable
+                                    key={value}
+                                    onPress={() => setHighlightColor(value)}
                                 >
-                                    {value === highlightColor ? (
-                                        <Icon
-                                            source={'check'}
-                                            size={
-                                                cellFontStyles
-                                                    .numberSelectorFont
-                                                    .fontSize || 36
-                                            }
-                                            color={penColor}
-                                        />
-                                    ) : undefined}
-                                </View>
-                            </Pressable>
-                        ))}
+                                    <View
+                                        style={[
+                                            styles.button,
+                                            {
+                                                backgroundColor: value,
+                                                width: cellSize,
+                                                height: cellSize,
+                                                borderWidth:
+                                                    value === highlightColor
+                                                        ? 1
+                                                        : 0,
+                                            },
+                                        ]}
+                                    >
+                                        {value === highlightColor ? (
+                                            <Icon
+                                                source={'check'}
+                                                size={
+                                                    cellFontStyles
+                                                        .numberSelectorFont
+                                                        .fontSize || 36
+                                                }
+                                                color={penColor}
+                                            />
+                                        ) : undefined}
+                                    </View>
+                                </Pressable>
+                            ))}
+                        </View>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -143,13 +146,17 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 24,
         paddingBottom: 16,
-        fontWeight: 'semibold',
+        fontWeight: '500',
         alignSelf: 'center',
     },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
+    },
+    column: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
     },
     settingName: {
         fontSize: 16,
@@ -163,5 +170,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 4,
         margin: 8,
+    },
+    labelText: {
+        fontSize: 16,
+        fontWeight: '500',
     },
 });

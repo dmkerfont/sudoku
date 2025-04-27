@@ -1,5 +1,11 @@
 # sudoku
 
+## 1.1.1
+
+### Patch Changes
+
+- 72c62f2: fix alignment of highlight colors in settings menu
+
 ## 1.1.0
 
 ### Minor Changes
